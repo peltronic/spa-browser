@@ -1,0 +1,65 @@
+
+[/] search
+[/] browse
+[ ] set home directory
+[ ] returns json
+[ ] upload file
+[ ] download file
+[ ] delete file
+[ ] copy file
+[ ] move file
+[ ] preview file contents (?)
+[ ] file types
+
+
+--
+folders
+files
+
+
+---
+
+UI
+
+browse: 
+    ~ go to root/home
+    ~ go to child node
+    ~ go to sibling node (next, prev)
+    ~ go to parent node
+    ~ view ( think mac finder ): simple parent, sibling, children links display with a "you are here"
+    ~ distiguish folders from files
+
+search:
+    ~ recursive from current directory
+    ~ set depth of search
+    ~ search for type file, folder, or both?
+    ~ display results, both folders and files, indicate which is which. 
+        o click on folder takes you to folder
+        o click on file takes you to folder, previews file (?)
+
+
+move file:
+
+---
+Questions
+
+server side file permissions?
+choosing home directory: only valid under a certain root folder (or a set of root folders, to make permissions easy)
+
+depth limit (for recursion)
+
+---
+
+Resources
+
+https://www.sitepoint.com/list-files-and-directories-with-php/
+
+https://gist.github.com/hakre/3599532
+
+use classes & namespaces on PHP side
+
+design pattern?
+
+hide comlexity
+
+decoupling
