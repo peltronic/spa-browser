@@ -22,8 +22,50 @@
 
 $( document ).ready(function() {
 
+    var configs = Array;
+    var current = null;
+
+    var renderLink = function(title, href) {
+        var html = '<a href="'+href+'">';
+        html += title;
+        html += '</a>';
+        return html;
+    };
+
     // First call server to get 'home'...
 
+    (function () {
+        return $.ajax({
+            url: '/api/constants.php',
+            type: 'GET'
+        })
+    })()
+    .then( function(response) {
+        configs = response.configs;
+        //current = "/treeroot/foo";
+        current = configs.home;
+        $('#val-current').html(current);
+        return $.ajax({
+            url: '/api/index.php',
+            type: 'GET',
+            data: {
+                src: current
+            }
+        })
+    })
+    .then( function(response) {
+        var list = $("#maplarge-app ul#children");
+        for (var i = 0; i < response.results.length; i++) {
+            //list.append('<li>'+response.results[i].pathname+'</li>');
+            list.append('<li>' + renderLink( response.results[i].pathname, response.results[i].pathname ) + '</li>');
+        }
+    })
+    .fail( function(errResponse) {
+        console.log('ERROR: ...');
+    });
+
+
+    /*
     (function () {
         return $.ajax({
             url: '/api/index.php',
@@ -34,15 +76,15 @@ $( document ).ready(function() {
         })
     })()
     .then( function(response) {
-        /*
-        $('#modal-placeholder').modal('hide');
-        $('#modal-placeholder').html('');
-        window.location.reload(true);
-        */
+        var list = $("#maplarge-app ul#children");
+        for (var i = 0; i < response.results.length; i++) {
+            list.append('<li>'+response.results[i].pathname+'</li>');
+        }
     })
     .fail( function(errResponse) {
         console.log('ERROR: ...');
     });
+    */
 
 });
 </script>
