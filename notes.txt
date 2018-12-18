@@ -19,14 +19,24 @@ files
 
 ---
 
-UI
+%%% API
+
+GET     /index?src=root/foo/bar
+GET     /view?src=root/foo/bar/file.txt
+GET     /search?root=root/foo/bar&q=myfile
+POST    /copy?src=/root/foo/file1.txt&dst=/root/bar
+PUT     /move?src=/root/foo/file1.txt&dst=/root/bar
+DELETE  /remove?src=root/foo/file1.txt
+
+%%% UI
 
 browse: 
     ~ go to root/home
     ~ go to child node
     ~ go to sibling node (next, prev)
     ~ go to parent node
-    ~ view ( think mac finder ): simple parent, sibling, children links display with a "you are here"
+    ~ view ( think mac finder ): simple parent, sibling, children links display with a "you are here" (current view)
+        o "current view" : show file & folder counts
     ~ distiguish folders from files
 
 search:
@@ -34,11 +44,41 @@ search:
     ~ set depth of search
     ~ search for type file, folder, or both?
     ~ display results, both folders and files, indicate which is which. 
-        o click on folder takes you to folder
-        o click on file takes you to folder, previews file (?)
+        o click "navigate icon" for folder takes you to folder
+        o click "preview icon" for  file takes you to folder, previews file (?)
 
 
 move file:
+    ~ need from and to folders
+    ~ click "select icon" for file selects the file
+    ~ selection appears in "sidebar"
+    ~ navigate to destination
+    ~ select "move here" icon, only visible if a selection is present
+
+download file:
+    ~ in file "view" mode only, icon to download
+
+upload file:
+    ~ in current folder, 'upload' icon adds files (not folders) to that folder
+
+move folder:
+
+corner cases:
+    ~ move/copy/delete root folder not allowed
+    ~ one selection at at time only
+
+TDD:
+    ~ plan it but don't write tests
+    ~ api tests
+
+State on client, not server!
+
+Agile/Sprints:
+    [ ] TBD
+
+Misc:
+    [ ] security: sanitize request input
+    [ ] implement api under api folder (www/api)
 
 ---
 Questions
@@ -63,3 +103,12 @@ design pattern?
 hide comlexity
 
 decoupling
+
+%%% inheritance
+
+    - fsItem implements movable, copyable, delteable
+        - folder/directory
+        - file
+
+
+icons can be text in this skeleton UI

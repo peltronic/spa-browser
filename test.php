@@ -11,7 +11,8 @@ $root = "./treeroot";
 /**
  * Example 1: DirectoryIterator
  */
-$dir = new DirectoryIterator($root);
+//$dir = new DirectoryIterator($root);
+$dir   = new RecursiveDirectoryIterator($root, RecursiveDirectoryIterator::SKIP_DOTS);
 echo "[$root]\n";
 foreach ($dir as $file) {
     echo " ├ $file\n";

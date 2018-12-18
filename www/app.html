@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>MapLarge App</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+</head>
+<body>
+
+    <div id="maplarge-app">
+        <h1>Hello App!</h1>
+        <div>
+            <h3>Current: <span id="val-current"></span></h3>
+            <ul id="children">
+            </ul>
+        </div>
+    </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+
+    // First call server to get 'home'...
+
+    (function () {
+        return $.ajax({
+            url: '/api/index.php',
+            type: 'GET',
+            data: {
+                src: "/treeroot/foo"
+            }
+        })
+    })()
+    .then( function(response) {
+        /*
+        $('#modal-placeholder').modal('hide');
+        $('#modal-placeholder').html('');
+        window.location.reload(true);
+        */
+    })
+    .fail( function(errResponse) {
+        console.log('ERROR: ...');
+    });
+
+});
+</script>
+
+</body>
+</html>
