@@ -1,4 +1,6 @@
 <?php
+require_once('../../libs/Browser.php'); // %FIXME
+
 $basepath = "/Users/petergorgone/workspace/study/MapLarge"; // %FIXME: take from constant file DRY
 //$home = $basepath."/"."treeroot";
 
@@ -24,8 +26,9 @@ try {
     } else {
         move_uploaded_file($_FILES['file']['tmp_name'], $current.'/'.$_FILES['file']['name']);
     }
-    // DRY: include index.php code here, send back same response & re-render ul list
-    $response = ['ok'];
+    
+    $browser = new Browser($current);
+    $response = $browser->getAll() + ['attrs'=>$attrs];
     $code = 200;
 } catch (Exception $e) {
     $response = [
