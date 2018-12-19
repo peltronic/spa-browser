@@ -13,7 +13,7 @@ if ( empty($attrs['src']) ) {
 }
 
 $browser = new Browser($current);
-$response = $browser->getAll() + ['attrs'=>$attrs];
+$response = ['nodes'=>$browser->getNodes(), 'attrs'=>$attrs];
 
 // ---
 

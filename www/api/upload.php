@@ -28,7 +28,7 @@ try {
     }
     
     $browser = new Browser($current);
-    $response = $browser->getAll() + ['attrs'=>$attrs];
+    $response = ['nodes'=>$browser->getNodes(), 'attrs'=>$attrs];
     $code = 200;
 } catch (Exception $e) {
     $response = [

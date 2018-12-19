@@ -10,7 +10,7 @@ class Browser {
         $this->_rdi = new RecursiveDirectoryIterator($rootNode);
     }
 
-    public function getAll()
+    public function getNodes()
     {
         $nodes = [];
 
@@ -30,10 +30,7 @@ class Browser {
             ];
             //echo " ├ $file\n";
         }
-
-        return [
-            'nodes' => $nodes,
-        ];
+        return $nodes;
     }
 
 }

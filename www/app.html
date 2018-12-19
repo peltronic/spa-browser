@@ -32,8 +32,7 @@
                     <input type="submit" value="Submit" id="clickme_to_submit"/>
                 </form> 
             </div>
-            <ul class="children">
-            </ul>
+            <div class="children"></div> <!-- list of child nodes -->
         </div>
     </div>
 
@@ -76,30 +75,13 @@ $( document ).ready(function() {
             })
         })
         .then( function(response) {
-            var parsed;
-            var r;
-            var list = $("#maplarge-app ul.children");
             console.log("App Configs");
             console.log(appConfigs);
-            list.empty();
-            parentNode = Utils.findParentNode(response.nodes);
-            parsed = Utils.parseRelativePath(appConfigs.basepath, parentNode.pathname);
-            list.append('<li>' + Utils.renderLink( 'parent', parsed ) + '</li>');
-            for (var i = 0; i < response.nodes.length; i++) {
-                r = response.nodes[i];
-                if (r.is_parent_path || r.is_self_path) {
-                    continue;
-                }
-                //list.append('<li>'+response.nodes[i].pathname+'</li>');
-                parsed = Utils.parseRelativePath(appConfigs.basepath, r.pathname);
-                //list.append('<li>' + Utils.renderLink( parsed, response.nodes[i].pathname ) + '</li>');
-                list.append('<li>' + Utils.renderLink( parsed, parsed ) + '</li>');
-                console.log('parsed: '+parsed);
-            }
+            $('div.children').html( Utils.buildChildList(response.nodes,appConfigs.basepath) );
         });
     } // doInit()
 
-    $(document).on('click', 'ul.children li a', function(e) {
+    $(document).on('click', 'div.children ul li a', function(e) {
         var context = $(this);
         e.preventDefault();
         console.log('clicked');
@@ -107,9 +89,8 @@ $( document ).ready(function() {
         $('#val-current').html(current);
         $('form#form-upload_file input[name=dst]').val(current);
         (function () {
-            var url = '/api/index.php';
             return $.ajax({
-                url: url,
+                url: '/api/index.php',
                 type: 'GET',
                 data: {
                     src: current
@@ -117,23 +98,8 @@ $( document ).ready(function() {
             })
         })()
         .then( function(response) {
-            var parsed;
-            var r;
-            var list = $("#maplarge-app ul.children");
             window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+current ); // update browser URL %TODO: encasualte in function
-            list.empty();
-            parentNode = Utils.findParentNode(response.nodes);
-            parsed = Utils.parseRelativePath(appConfigs.basepath, parentNode.pathname);
-            list.append('<li>' + Utils.renderLink( 'parent', parsed ) + '</li>');
-            for (var i = 0; i < response.nodes.length; i++) {
-                r = response.nodes[i];
-                if (r.is_parent_path || r.is_self_path) {
-                    continue;
-                }
-                parsed = Utils.parseRelativePath(appConfigs.basepath, r.pathname);
-                list.append('<li>' + Utils.renderLink( parsed, parsed ) + '</li>');
-                console.log('parsed: '+parsed);
-            }
+            $('div.children').html( Utils.buildChildList(response.nodes,appConfigs.basepath) );
         })
         return false;
     });
@@ -158,6 +124,7 @@ $( document ).ready(function() {
             processData: false,
             //timeout: 600000,
             success: function (response) {
+                $('div.children').html( Utils.buildChildList(response.nodes,appConfigs.basepath) );
             },
             error: function (e) {
             }
@@ -168,26 +135,6 @@ $( document ).ready(function() {
     doInit();
 
 
-    /*
-    (function () {
-        return $.ajax({
-            url: '/api/index.php',
-            type: 'GET',
-            data: {
-                src: "/treeroot/foo"
-            }
-        })
-    })()
-    .then( function(response) {
-        var list = $("#maplarge-app ul.children");
-        for (var i = 0; i < response.nodes.length; i++) {
-            list.append('<li>'+response.nodes[i].pathname+'</li>');
-        }
-    })
-    .fail( function(errResponse) {
-        console.log('ERROR: ...');
-    });
-    */
 
 });
 </script>

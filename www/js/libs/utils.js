@@ -12,6 +12,32 @@ var Utils = {
         return html;
     },
 
+    // Creates a <ul> list and adds nodes as <li> elements to it
+    //  ~ %NOTE: tightly coupled to api response format
+    buildChildList: function(nodes,basepath) {
+        var ul = $('<ul>');
+        var li;
+        var n;
+
+        // parent node
+        var parentNode = this.findParentNode(nodes);
+        var parsed = this.parseRelativePath(basepath, parentNode.pathname);
+        li = $('<li>');
+        li.html( this.renderLink( 'parent', parsed ) ).appendTo(ul);
+
+        // child nodes
+        for (var i = 0; i < nodes.length; i++) {
+            n = nodes[i];
+            if (n.is_parent_path || n.is_self_path) {
+                continue;
+            }
+            parsed = this.parseRelativePath(basepath, n.pathname);
+            li = $('<li>');
+            li.html( this.renderLink( parsed, parsed ) ).appendTo(ul);
+        }
+        return ul;
+    },
+
     parseRelativePath: function(basepath, fullpath) {
         var re = new RegExp(basepath);
         var parsed = fullpath.replace(re, '');
