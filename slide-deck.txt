@@ -1,0 +1,112 @@
+The task is to create a web service API that allows users to query the contents of a directory on the web server and a single page web app that can be used to search and browse folders and files. A server side home directory should be configurable via variable.
+Client Side, the application should be deep-linkable (the state of the UI should be kept in the URL). All of the UI work should be done client side via JavaScript that renders HTML - do not render HTML server side (no
+ ASPX, etc). Styling is not as important for this task, we are more concerned with functionality. Keep framework usage to a minimum, but feel free to use Knockout, jQuery and jQuery UI if it helps.
+The goal is to produce a functional proof-of-concept to let us see how you think. It is important to provide a decent body of code, so that we can talk about the logic than it is to make it “pretty”.
+The point of this exercise is to end up with a body of work that is big enough that our team can review it and evaluate your design and coding style and skills.
+Sample Functional Requirements
+In this example we would want a developer to implement both server side and client side logic in a primitive end to end flow that runs without errors for a few small features. If you chose to submit a project, the goal is to show a working proof of concept with enough C# and JavaScript code that we can get a feel for your coding style and have some interesting classes to discuss in a code review. You may delete all the default controllers and files you are not using, as it may help us focus on your code
+Primary Requirements
+● Ensure your solution builds in Visual Studio 2017
+● Web API that allows Browse and Search Files & Folders and returns JSON
+● Deep linkable URL pattern
+● SPA (Single Page App using JavaScript)
+● Upload/download files from the browser
+● Show file and folder counts and sizes for the current view
+● No third party plugins. (Knockout, jQuery and jQueryUI are not requirements but can be used.)
+Secondary Requirements
+● Entire component contained in a dialog widget, with a trigger element (button, etc)
+● Delete, Move, Copy files and folders
+● Performance - we highly value performance
+● Any other cool stuff you want to show!
+
+
+=========================
+
+Slide Deck Presentation Details:
+    ○ Illustrate your approach to eliciting more detailed requirements
+    ○ Describe execution methodologies and tools, (e.g., Agile and Jira)
+    ○ Illustrate workflows or communication strategies with developers, managers and the customer
+        ■ Be able to characterize how you handle customer interactions
+        ■ Demonstrate how you decompose the project into milestones and deliveries
+        ■ Illustrate how you document the project for different audiences
+    ○ Describe best approach to project risk management (schedule, technology decisions, ad-hoc requirements, etc.)
+    ○ Describe how you mitigate risk and failure
+    ○ Provide an illustrated and annotated mock-up of the software user interface based on the sample project requirements.
+
+=========================
+
+%%% Illustrate your approach to eliciting more detailed requirements
+
+=> Assumption: we have recieved some initial customer requirements in written form. Very loose & quick, almost brainstorming ideas of what the functionality the product has and getting them on 'paper'. Words & pictures, diagrams.  
+
+https://www.bridging-the-gap.com/user-experience-techniques/
+identify roles/actors, data sources, data sinks, blocks of logic (black boxes)
+role playing / user stories
+prototype, minimially-viable (fast, agile)
+mockups (fast, agile)
+
+%%%
+
+Agile:
+
+A loose form of scrum, agile-like
+
+Jira:
+
+%%% misc thoughts
+
+~ identify what 'blocks' modules we have built already and can be used, or are available as 3rd-party libraries and can simply be plugged-in (example: Pluuploader).
+~ identify tools and frameworks to make development more efficient and not re-invent the wheel so-to-say (eg, Twitter Bootstrap 4, KnockoutJS, VueJS, etc).
+~ unknown/un-discovered requirements, integration?
+~ execution, release/integration, unknown
+
+%%% Illustrate workflows or communication strategies with developers, managers and the customer
+    ■ Be able to characterize how you handle customer interactions
+    ■ Demonstrate how you decompose the project into milestones and deliveries
+    ■ Illustrate how you document the project for different audiences
+
+Slack (or equiv)
+email 
+phone calls, or Slack with screenshare
+Google Docs, Sheets (or equiv)...real time updating in the cloud
+in-person
+
+Milestones, Deliveries
+
+staging delivery vs production delivery
+
+document the project for different audiences
+    ~ technical : schedule at sprint level, user stories w/ technical supplemenation, other technical requirements and details, reasons behind features and functionality (important for context! see SCRUM book)
+    ~ non-technical: user stories (w/o technical supplemntation/notes), milestones
+    ~ management/financial: milestone level, risk management, costs
+
+%%% Describe best approach to project risk management (schedule, technology decisions, ad-hoc requirements, etc.)
+
+%%% Describe how you mitigate risk and failure
+
+
+** gating issues, dependencies: ensure developers are working in parallel as much as possible as opposed to serially.
+
+Testing/TDD
+Transparency (?)
+Prioritization : for example a project has features A, B, and C. A is medium complexity and high priority, a must-have without which the application has no reason to exist. C on the other hand is somewhat complex and low priority. Not to say it isn't important, but A and B can work without C, whose functionality can be handled manually if necessary.  In this scenario the team would work on A and B first and C last. While the goal would still be to deliver on-schedule, if unknown issues should arise, we'd still be able to release a viable product (with A and B) on-time and enhance it subsequently with feature C.
+
+%%%
+
+%%%
+
+%%%
+
+%%%
+
+%%%
+
+%%%
+
+%%%
+
+%%%
+
+%%%
+
+%%%
