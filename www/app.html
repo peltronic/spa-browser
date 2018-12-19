@@ -72,9 +72,13 @@ $( document ).ready(function() {
             })
         })()
         .then( function(response) {
-            appConfigs = response.configs;
-            //current = "/treeroot/foo";
-            current = appConfigs.home;
+            var urlParams = new URLSearchParams(window.location.search);
+            appConfigs = response.configs; // set 'global'
+            if ( urlParams.has('path') ) {
+                current = urlParams.get('path');
+            } else {
+                current = appConfigs.home;
+            }
             $('#val-current').html(current);
             return $.ajax({
                 url: '/api/index.php',
@@ -87,10 +91,9 @@ $( document ).ready(function() {
         .then( function(response) {
             var parsed;
             var r;
+            var list = $("#maplarge-app ul.children");
             console.log("App Configs");
             console.log(appConfigs);
-            console.log('window.location: '+window.location);
-            var list = $("#maplarge-app ul.children");
             list.empty();
             parentNode = findParentNode(response.results);
             parsed = parseRelativePath(appConfigs.basepath, parentNode.pathname);
@@ -110,9 +113,9 @@ $( document ).ready(function() {
     } // doInit()
 
     $(document).on('click', 'ul.children li a', function(e) {
+        var context = $(this);
         e.preventDefault();
         console.log('clicked');
-        var context = $(this);
         current = context.data('subpath');
         $('#val-current').html(current);
         (function () {
@@ -127,13 +130,15 @@ $( document ).ready(function() {
         })()
         .then( function(response) {
             var parsed;
+            var r;
             var list = $("#maplarge-app ul.children");
+            window.history.replaceState( {}, 'MapLarge App', getAppURL()+'?path='+current ); // update browser URL %TODO: encasualte in function
             list.empty();
             parentNode = findParentNode(response.results);
             parsed = parseRelativePath(appConfigs.basepath, parentNode.pathname);
             list.append('<li>' + renderLink( 'parent', parsed ) + '</li>');
             for (var i = 0; i < response.results.length; i++) {
-                var r = response.results[i];
+                r = response.results[i];
                 if (r.is_parent_path || r.is_self_path) {
                     continue;
                 }
