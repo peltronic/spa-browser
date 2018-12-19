@@ -19,15 +19,30 @@ var Utils = {
         }, 0);
     },
 
-    // Create markup for a html <a> tag
-    renderLink: function(title, subpath) {
-        var href = this.getAppURL()+'?path='+subpath;
-        var html = '<a href="'+href+'" data-subpath="'+subpath+'">';
-        html += title;
-        html += '</a>';
-        return html;
+    // html builder
+    // render: returns html
+    // build: returns jquery object
+    //  [ ] set basepath in 'class' contructor
+    //  %FIXME DRY: just refactor to renderNode (?)
+    renderCurrentNode: function(node, basepath) {
+        var parsed = this.parseRelativePath(basepath, node.pathname);
+        //htmlStr = this.renderLink( parsed, parsed );
+        htmlStr = parsed;
+        htmlStr += ' ('+node.size+')'; // %FIXME: DRY
+        return htmlStr;
     },
 
+    // Create markup for a html <a> tag
+    // html builder (??)
+    renderLink: function(title, subpath) {
+        var href = this.getAppURL()+'?path='+subpath;
+        var htmlStr = '<a href="'+href+'" data-subpath="'+subpath+'">';
+        htmlStr += title;
+        htmlStr += '</a>';
+        return htmlStr;
+    },
+
+    // html builder
     buildMeta: function(nodes) {
         var ul = $('<ul>');
         var li;
@@ -38,6 +53,7 @@ var Utils = {
 
     // Creates a <ul> list and adds nodes as <li> elements to it
     //  ~ %NOTE: tightly coupled to api response format
+    // html builder
     buildChildList: function(nodes,basepath) {
         var ul = $('<ul>');
         var li, n, htmlStr;
@@ -75,10 +91,16 @@ var Utils = {
 
     // Find parent node if any in a set of nodes returned from the api
     findParentNode: function(nodes) {
-        var parentNode = nodes.find( function(n) {
+        return nodes.find( function(n) {
             return true === n.is_parent_path;
         });
-        return parentNode; // %FIXME: handle undefined/doesn't exist case
+        // %FIXME: handle undefined/doesn't exist case
+    },
+
+    findSelfNode: function(nodes) {
+        return nodes.find( function(n) {
+            return true === n.is_self_path;
+        });
     },
 
     init: function() {

@@ -3,6 +3,9 @@ http://www.dev-maplarge.com/app.html
 
 http://www.dev-maplarge.com/api/index.php?src=/treeroot/foo
 
+%TODO:
+[ ] make current a node (so we can display if it's a file or folder, etc)
+
 USE interfaces & traits
 code comments
 

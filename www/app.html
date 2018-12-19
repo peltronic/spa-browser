@@ -1,44 +1,81 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MapLarge App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/app.css">
+    <!--
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    -->
 </head>
 <body>
 
-    <div id="maplarge-app">
+    <section class="section">
+        <article class="container">
 
-        <h1>Hello App!</h1>
+            <div id="maplarge-app">
 
-        <div id="widget-1">
-            <h2>Widget 1</h2>
-        </div>
+                <h1 class="title">Hello App!</h1>
+        
+                <section id="widget-1" class="widget">
+                    <h2>Widget 1</h2>
+                </section>
+        
+                <section id="widget-2" class="widget">
+                    <h2>Widget 2</h2>
+                </section>
+        
+                <section id="widget-3" class="widget">
 
-        <div id="widget-2">
-            <h2>Widget 2</h2>
-        </div>
+                    <h2 class="subtitle is-4">Widget 3</h2>
 
-        <div id="widget-3">
-            <h2>Widget 3</h2>
-            <h3>Current: <span id="val-current"></span></h3>
-            <div class="meta"></div>
-            <div>
-                <span>Upload</span>
-                <form id="form-upload_file">
-                    <label>
-                        <span>Upload File</span>
-                        <input type="file" name="file" id="file_to_upload">
-                    </label>
-                    <input type="hidden" name="dst" value="">
-                    <input type="submit" value="Submit" id="clickme_to_submit"/>
-                </form> 
-            </div>
-            <div class="children"></div> <!-- list of child nodes -->
-        </div>
-    </div>
+                    <article class="columns">
+                        <div class="column">
+                            <h5 class="subtitle is-5">Navigation</h6>
+                            <div class="content">
+                                <p class="">Current: <span id="val-current"></span></p>
+                                <div class="children"></div> <!-- list of child nodes -->
+                            </div>
+                        </div>
+                        <div class="column">
+                            <h5 class="subtitle is-5">Data and Ops</h5>
+                            <div class="meta"></div>
+                            <hr />
+                            <div class="info">
+                                <ul>
+                                    <li>Type: <span>TBD</span></li>
+                                </ul>
+                            </div>
+                            <hr />
+                            <div>
+                                <span>Upload</span>
+                                <form id="form-upload_file">
+                                    <label>
+                                        <span>Upload File</span>
+                                        <input type="file" name="file" id="file_to_upload">
+                                    </label>
+                                    <input type="hidden" name="dst" value="">
+                                    <input type="submit" value="Submit" id="clickme_to_submit"/>
+                                </form> 
+                            </div>
+                        </div>
+                    </article>
+
+                </section>
+
+            </div> <!-- #maplarge-app -->
+
+        </div> <!-- container -->
+    </section>
+
+    <!-- ======================================================= -->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!--
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+-->
 <script src="/js/libs/utils.js"></script>
 
 <script type="text/javascript">
@@ -66,7 +103,6 @@ $( document ).ready(function() {
             } else {
                 current = appConfigs.home;
             }
-            $('#val-current').html(current);
             $('form#form-upload_file input[name=dst]').val(current);
             return $.ajax({
                 url: '/api/index.php',
@@ -79,6 +115,8 @@ $( document ).ready(function() {
         .then( function(response) {
             console.log("App Configs");
             console.log(appConfigs);
+            var currentNode = Utils.findSelfNode(response.nodes);
+            $('#val-current').html( Utils.renderCurrentNode(currentNode, appConfigs.basepath) );
             $('div.meta').html( Utils.buildMeta(response.nodes) );
             $('div.children').html( Utils.buildChildList(response.nodes,appConfigs.basepath) );
         });
