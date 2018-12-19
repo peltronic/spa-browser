@@ -8,6 +8,11 @@ echo "\n";
 
 $root = "./treeroot";
 
+/*
+print_r( realpath('/Users/petergorgone/workspace/study/MapLarge//treeroot/foo/bar/..') );
+echo "\n";
+die;
+ */
 /**
  * Example 1: DirectoryIterator
  */

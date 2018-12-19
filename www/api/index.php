@@ -14,13 +14,19 @@ if ( empty($attrs['src']) ) {
 }
 
 $results = [];
-$dir   = new RecursiveDirectoryIterator($root, RecursiveDirectoryIterator::SKIP_DOTS);
+//$dir   = new RecursiveDirectoryIterator($root, RecursiveDirectoryIterator::SKIP_DOTS);
+$dir   = new RecursiveDirectoryIterator($root);
 //echo "[$root]\n";
 foreach ($dir as $file) {
+    $isSelfPath = '.' === $file->getFilename();
+    $isParentPath = '..' === $file->getFilename();
+
     $results[] = [
         'is_file' => $file->isFile(),
-        'pathname' => $file->getPathname(),
+        'pathname' => realpath($file->getPathname()), // use realpath to remove '..'
         'filename' => $file->getFilename(),
+        'is_parent_path' => $isParentPath,
+        'is_self_path' => $isSelfPath,
         //'tbd' => $file->key(),
         //'depth' => $dir->getDepth(),
     ];

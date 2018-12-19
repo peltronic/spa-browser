@@ -21,6 +21,9 @@
         <div id="widget-3">
             <h2>Widget 3</h2>
             <h3>Current: <span id="val-current"></span></h3>
+            <div>
+                <span>Upload</span>
+            </div>
             <ul class="children">
             </ul>
         </div>
@@ -52,6 +55,12 @@ $( document ).ready(function() {
         var parsed = fullpath.replace(re, '');
         return parsed.replace(/^\/|\/$/g, ''); // remove any trailing or leading slashes
     };
+    var findParentNode = function(nodes) {
+        var parentNode = nodes.find( function(o) {
+            return true === o.is_parent_path;
+        });
+        return parentNode; // %FIXME: handle undefined/doesn't exist case
+    }
 
     // First call server to get 'home'...
 
@@ -76,14 +85,23 @@ $( document ).ready(function() {
             })
         })
         .then( function(response) {
+            var parsed;
+            var r;
             console.log("App Configs");
             console.log(appConfigs);
             console.log('window.location: '+window.location);
             var list = $("#maplarge-app ul.children");
             list.empty();
+            parentNode = findParentNode(response.results);
+            parsed = parseRelativePath(appConfigs.basepath, parentNode.pathname);
+            list.append('<li>' + renderLink( 'parent', parsed ) + '</li>');
             for (var i = 0; i < response.results.length; i++) {
+                r = response.results[i];
+                if (r.is_parent_path || r.is_self_path) {
+                    continue;
+                }
                 //list.append('<li>'+response.results[i].pathname+'</li>');
-                parsed = parseRelativePath(appConfigs.basepath, response.results[i].pathname);
+                parsed = parseRelativePath(appConfigs.basepath, r.pathname);
                 //list.append('<li>' + renderLink( parsed, response.results[i].pathname ) + '</li>');
                 list.append('<li>' + renderLink( parsed, parsed ) + '</li>');
                 console.log('parsed: '+parsed);
@@ -108,10 +126,18 @@ $( document ).ready(function() {
             })
         })()
         .then( function(response) {
+            var parsed;
             var list = $("#maplarge-app ul.children");
             list.empty();
+            parentNode = findParentNode(response.results);
+            parsed = parseRelativePath(appConfigs.basepath, parentNode.pathname);
+            list.append('<li>' + renderLink( 'parent', parsed ) + '</li>');
             for (var i = 0; i < response.results.length; i++) {
-                parsed = parseRelativePath(appConfigs.basepath, response.results[i].pathname);
+                var r = response.results[i];
+                if (r.is_parent_path || r.is_self_path) {
+                    continue;
+                }
+                parsed = parseRelativePath(appConfigs.basepath, r.pathname);
                 list.append('<li>' + renderLink( parsed, parsed ) + '</li>');
                 console.log('parsed: '+parsed);
             }
