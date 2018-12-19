@@ -7,10 +7,21 @@
 <body>
 
     <div id="maplarge-app">
+
         <h1>Hello App!</h1>
-        <div>
+
+        <div id="widget-1">
+            <h2>Widget 1</h2>
+        </div>
+
+        <div id="widget-2">
+            <h2>Widget 2</h2>
+        </div>
+
+        <div id="widget-3">
+            <h2>Widget 3</h2>
             <h3>Current: <span id="val-current"></span></h3>
-            <ul id="children">
+            <ul class="children">
             </ul>
         </div>
     </div>
@@ -22,47 +33,93 @@
 
 $( document ).ready(function() {
 
-    var configs = Array;
+    var appConfigs = Array;
     var current = null;
 
-    var renderLink = function(title, href) {
-        var html = '<a href="'+href+'">';
+    var getAppURL = function() {
+        return '//' + location.host + location.pathname;
+    }
+
+    var renderLink = function(title, subpath) {
+        var href = getAppURL()+'?path='+subpath;
+        var html = '<a href="'+href+'" data-subpath="'+subpath+'">';
         html += title;
         html += '</a>';
         return html;
     };
+    var parseRelativePath = function(basepath, fullpath) {
+        var re = new RegExp(basepath);
+        var parsed = fullpath.replace(re, '');
+        return parsed.replace(/^\/|\/$/g, ''); // remove any trailing or leading slashes
+    };
 
     // First call server to get 'home'...
 
-    (function () {
-        return $.ajax({
-            url: '/api/constants.php',
-            type: 'GET'
+    function doInit() {
+        (function () {
+            return $.ajax({
+                url: '/api/constants.php',
+                type: 'GET'
+            })
+        })()
+        .then( function(response) {
+            appConfigs = response.configs;
+            //current = "/treeroot/foo";
+            current = appConfigs.home;
+            $('#val-current').html(current);
+            return $.ajax({
+                url: '/api/index.php',
+                type: 'GET',
+                data: {
+                    src: current
+                }
+            })
         })
-    })()
-    .then( function(response) {
-        configs = response.configs;
-        //current = "/treeroot/foo";
-        current = configs.home;
+        .then( function(response) {
+            console.log("App Configs");
+            console.log(appConfigs);
+            console.log('window.location: '+window.location);
+            var list = $("#maplarge-app ul.children");
+            list.empty();
+            for (var i = 0; i < response.results.length; i++) {
+                //list.append('<li>'+response.results[i].pathname+'</li>');
+                parsed = parseRelativePath(appConfigs.basepath, response.results[i].pathname);
+                //list.append('<li>' + renderLink( parsed, response.results[i].pathname ) + '</li>');
+                list.append('<li>' + renderLink( parsed, parsed ) + '</li>');
+                console.log('parsed: '+parsed);
+            }
+        });
+    } // doInit()
+
+    $(document).on('click', 'ul.children li a', function(e) {
+        e.preventDefault();
+        console.log('clicked');
+        var context = $(this);
+        current = context.data('subpath');
         $('#val-current').html(current);
-        return $.ajax({
-            url: '/api/index.php',
-            type: 'GET',
-            data: {
-                src: current
+        (function () {
+            var url = '/api/index.php';
+            return $.ajax({
+                url: url,
+                type: 'GET',
+                data: {
+                    src: current
+                }
+            })
+        })()
+        .then( function(response) {
+            var list = $("#maplarge-app ul.children");
+            list.empty();
+            for (var i = 0; i < response.results.length; i++) {
+                parsed = parseRelativePath(appConfigs.basepath, response.results[i].pathname);
+                list.append('<li>' + renderLink( parsed, parsed ) + '</li>');
+                console.log('parsed: '+parsed);
             }
         })
-    })
-    .then( function(response) {
-        var list = $("#maplarge-app ul#children");
-        for (var i = 0; i < response.results.length; i++) {
-            //list.append('<li>'+response.results[i].pathname+'</li>');
-            list.append('<li>' + renderLink( response.results[i].pathname, response.results[i].pathname ) + '</li>');
-        }
-    })
-    .fail( function(errResponse) {
-        console.log('ERROR: ...');
+        return false;
     });
+
+    doInit();
 
 
     /*
@@ -76,7 +133,7 @@ $( document ).ready(function() {
         })
     })()
     .then( function(response) {
-        var list = $("#maplarge-app ul#children");
+        var list = $("#maplarge-app ul.children");
         for (var i = 0; i < response.results.length; i++) {
             list.append('<li>'+response.results[i].pathname+'</li>');
         }

@@ -19,13 +19,20 @@ files
 
 ---
 
+%%% Deep Linkable
+http://www.dev-maplarge.com/app.html
+http://www.dev-maplarge.com/app.html
+http://www.dev-maplarge.com/app.html?path=treeroot
+http://www.dev-maplarge.com/app.html?path=treeroot/foo
+http://www.dev-maplarge.com/app.html?path=treeroot/newfile.txt
+
 %%% API
 
 GET     /index?src=root/foo/bar
 GET     /view?src=root/foo/bar/file.txt
 GET     /search?root=root/foo/bar&q=myfile
-POST    /copy?src=/root/foo/file1.txt&dst=/root/bar
-PUT     /move?src=/root/foo/file1.txt&dst=/root/bar
+POST    /copy?src=root/foo/file1.txt&dst=root/bar
+PUT     /move?src=root/foo/file1.txt&dst=root/bar
 DELETE  /remove?src=root/foo/file1.txt
 
 %%% UI

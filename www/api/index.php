@@ -21,6 +21,7 @@ foreach ($dir as $file) {
         'is_file' => $file->isFile(),
         'pathname' => $file->getPathname(),
         'filename' => $file->getFilename(),
+        //'tbd' => $file->key(),
         //'depth' => $dir->getDepth(),
     ];
     //echo " ├ $file\n";
