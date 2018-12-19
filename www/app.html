@@ -23,6 +23,14 @@
             <h3>Current: <span id="val-current"></span></h3>
             <div>
                 <span>Upload</span>
+                <form id="form-upload_file">
+                    <label>
+                        <span>Upload File</span>
+                        <input type="file" name="file" id="file_to_upload">
+                    </label>
+                    <input type="hidden" name="dst" value="">
+                    <input type="submit" value="Submit" id="clickme_to_submit"/>
+                </form> 
             </div>
             <ul class="children">
             </ul>
@@ -80,6 +88,7 @@ $( document ).ready(function() {
                 current = appConfigs.home;
             }
             $('#val-current').html(current);
+            $('form#form-upload_file input[name=dst]').val(current);
             return $.ajax({
                 url: '/api/index.php',
                 type: 'GET',
@@ -118,6 +127,7 @@ $( document ).ready(function() {
         console.log('clicked');
         current = context.data('subpath');
         $('#val-current').html(current);
+        $('form#form-upload_file input[name=dst]').val(current);
         (function () {
             var url = '/api/index.php';
             return $.ajax({
@@ -148,6 +158,33 @@ $( document ).ready(function() {
             }
         })
         return false;
+    });
+
+    // File upload
+    $(document).on('submit', 'form#form-upload_file', function (e) {
+        e.preventDefault();
+
+        var thisForm = $(this);
+        var formdata = new FormData(thisForm[0]);
+        
+        //formdata.append("CustomField", "This is some extra data, testing"); // use this and remvoe hidden field %TODO
+
+        //$("#clickme_to_submit").prop("disabled", true);
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/upload.php',
+            data: formdata,
+            cache: false,
+            contentType: false,
+            processData: false,
+            //timeout: 600000,
+            success: function (response) {
+            },
+            error: function (e) {
+            }
+        });
+
     });
 
     doInit();

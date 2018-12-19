@@ -1,6 +1,4 @@
 <?php
-// %FIXME: should be under api folder
-//require_once('config.php');
 $basepath = "/Users/petergorgone/workspace/study/MapLarge";
 $home = $basepath."/"."treeroot";
 

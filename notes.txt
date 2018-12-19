@@ -32,6 +32,7 @@ GET     /index?src=root/foo/bar
 GET     /view?src=root/foo/bar/file.txt
 GET     /search?root=root/foo/bar&q=myfile
 POST    /copy?src=root/foo/file1.txt&dst=root/bar
+POST    /upload?dst=root/foo
 PUT     /move?src=root/foo/file1.txt&dst=root/bar
 DELETE  /remove?src=root/foo/file1.txt
 
