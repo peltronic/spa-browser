@@ -32,10 +32,7 @@ class Browser {
         }
 
         return [
-            'results' => $nodes, // %FIXME:  rename results -> nodes
-            //'current_view' => 'tbd',
-            //'parent_view' => 'tbd',
-            //'children' => ['tbd1','tbd2'],
+            'nodes' => $nodes,
         ];
     }
 

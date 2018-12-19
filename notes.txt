@@ -1,4 +1,8 @@
 USE interfaces & traits
+code comments
+
+// https://code.tutsplus.com/tutorials/build-your-first-javascript-library--net-26796
+// https://stackoverflow.com/questions/16279519/how-to-create-javascript-library-of-self-written-functions
 
 [/] search
 [/] browse

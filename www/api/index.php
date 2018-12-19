@@ -17,6 +17,7 @@ $response = $browser->getAll() + ['attrs'=>$attrs];
 
 // ---
 
+// %TODO DRY: ->respondAndExit(...)
 header('Content-Type: application/json');
 echo json_encode($response);
 exit;
