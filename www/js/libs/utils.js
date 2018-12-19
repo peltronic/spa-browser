@@ -32,6 +32,13 @@ var Utils = {
         return htmlStr;
     },
 
+    // html builder
+    renderParentNode: function(node, basepath) {
+        var parsed = this.parseRelativePath(basepath, node.pathname);
+        htmlStr = this.renderLink( parsed, parsed );
+        return htmlStr;
+    },
+
     // Create markup for a html <a> tag
     // html builder (??)
     renderLink: function(title, subpath) {
@@ -58,6 +65,7 @@ var Utils = {
         var ul = $('<ul>');
         var li, n, htmlStr;
 
+        /*
         // parent node
         var parentNode = this.findParentNode(nodes);
         var parsed = this.parseRelativePath(basepath, parentNode.pathname);
@@ -65,6 +73,7 @@ var Utils = {
         htmlStr += ' ('+parentNode.size+')';
         li = $('<li>');
         li.html(htmlStr).appendTo(ul);
+        */
 
         // child nodes
         for (var i = 0; i < nodes.length; i++) {

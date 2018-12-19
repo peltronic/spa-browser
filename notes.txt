@@ -5,6 +5,7 @@ http://www.dev-maplarge.com/api/index.php?src=/treeroot/foo
 
 %TODO:
 [ ] make current a node (so we can display if it's a file or folder, etc)
+[ ] => make Data & ops have tabs, prototype object for fileThingy with child objects for file and folder, that each know how to render their own info
 
 USE interfaces & traits
 code comments
