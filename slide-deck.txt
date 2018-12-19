@@ -55,10 +55,14 @@ Jira:
 
 %%% misc thoughts
 
+~ avoid technical debt, address it sooner rather than later when it builds up
 ~ identify what 'blocks' modules we have built already and can be used, or are available as 3rd-party libraries and can simply be plugged-in (example: Pluuploader).
 ~ identify tools and frameworks to make development more efficient and not re-invent the wheel so-to-say (eg, Twitter Bootstrap 4, KnockoutJS, VueJS, etc).
 ~ unknown/un-discovered requirements, integration?
+    o eg: requirement to copy a file...if to a different folder it can keep it's name, but if the same folder the name must be unique
+    o eg: requirement to upload : handle case where a file of same name already exists
 ~ execution, release/integration, unknown
+~ write code that is self-documenting. Use comments as needed but avoid comments that describe what is obvious from the code itself.
 
 %%% Illustrate workflows or communication strategies with developers, managers and the customer
     ■ Be able to characterize how you handle customer interactions
@@ -81,18 +85,54 @@ document the project for different audiences
     ~ management/financial: milestone level, risk management, costs
 
 %%% Describe best approach to project risk management (schedule, technology decisions, ad-hoc requirements, etc.)
+    schedule: 
+        ~ identify dependencies, schedule to maximize parallelism and avoid delays due to gating issues. 
+        ~ Ask team every day: is there anything stopping you or gating you at the moment.
+        ~ DRY/modules
+        ~ code to interfaces
+        ~ decoupling
+        ~ other best practices
+    Tech decision: favor the simple over the complex (as long as it gets the job done), avoid over-engineering
+    Ad-hoc requirements:
 
 %%% Describe how you mitigate risk and failure
 
-
 ** gating issues, dependencies: ensure developers are working in parallel as much as possible as opposed to serially.
 
-Testing/TDD
+Project staffing: are the right people in the right roles? Is the project under-staffed? over-staffed? (doubling the number of developers does not double the productivity, as there is communication overhead that increases with the number of team members). Goal is to find the "sweet spot" in terms of the number of engineers for the task at hand.
+
+Favor shared code ownership 
+Avoid siloed knowledge.
+
+Testing/TDD (https://opensource.com/article/17/5/30-best-practices-software-development-and-testing)
+    ~ test behavior not implemenation (things being tested are 'black boxes', and changing implementation should not break the tests
 Transparency (?)
 Prioritization : for example a project has features A, B, and C. A is medium complexity and high priority, a must-have without which the application has no reason to exist. C on the other hand is somewhat complex and low priority. Not to say it isn't important, but A and B can work without C, whose functionality can be handled manually if necessary.  In this scenario the team would work on A and B first and C last. While the goal would still be to deliver on-schedule, if unknown issues should arise, we'd still be able to release a viable product (with A and B) on-time and enhance it subsequently with feature C.
 
-%%%
+Decouple Functionality and UI Design
+    ~ build out functionality fast and rapidly with a minimlist (skeleton) UI
+    ~ UI & design begins in-earnest once all or most functionality is in place and working (bugs are ok)
+    ~ A rough UI Design can be drawn up ealier, but keep it "loose"
 
+The reasoning behind this approach is we don't want to make assumptions in the UI design that may not be borne out by the eventual functionality (can you give a real-world example??)
+
+Analogy: putting together a piece of furniture from Ikea, or decorating a Christmas tree.
+
+%%% UI mockup
+
+    Browse
+        current ('you are here')
+        navigation (navigable)
+
+    Search
+        returns list (navigable)
+    
+    Set Home
+
+    File ops:
+        View
+        Upload, Download
+        Copy, Move, Delete
 %%%
 
 %%%

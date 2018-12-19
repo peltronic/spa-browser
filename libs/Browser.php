@@ -25,6 +25,7 @@ class Browser {
                 'filename' => $file->getFilename(),
                 'is_parent_path' => $isParentPath,
                 'is_self_path' => $isSelfPath,
+                'size' => $file->getSize(),
                 //'tbd' => $file->key(),
                 //'depth' => $this->_rdi->getDepth(),
             ];

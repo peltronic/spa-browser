@@ -21,6 +21,7 @@
         <div id="widget-3">
             <h2>Widget 3</h2>
             <h3>Current: <span id="val-current"></span></h3>
+            <div class="meta"></div>
             <div>
                 <span>Upload</span>
                 <form id="form-upload_file">
@@ -44,8 +45,9 @@
 
 $( document ).ready(function() {
 
+    // Global 'state'...
     var appConfigs = Array;
-    var current = null;
+    var current = null; // you are 'here'
 
     // First call server to get 'home'...
 
@@ -77,14 +79,15 @@ $( document ).ready(function() {
         .then( function(response) {
             console.log("App Configs");
             console.log(appConfigs);
+            $('div.meta').html( Utils.buildMeta(response.nodes) );
             $('div.children').html( Utils.buildChildList(response.nodes,appConfigs.basepath) );
         });
     } // doInit()
 
     $(document).on('click', 'div.children ul li a', function(e) {
-        var context = $(this);
         e.preventDefault();
-        console.log('clicked');
+
+        var context = $(this);
         current = context.data('subpath');
         $('#val-current').html(current);
         $('form#form-upload_file input[name=dst]').val(current);
@@ -99,6 +102,7 @@ $( document ).ready(function() {
         })()
         .then( function(response) {
             window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+current ); // update browser URL %TODO: encasualte in function
+            $('div.meta').html( Utils.buildMeta(response.nodes) );
             $('div.children').html( Utils.buildChildList(response.nodes,appConfigs.basepath) );
         })
         return false;
