@@ -26,27 +26,20 @@ var Utils = {
     //  %FIXME DRY: just refactor to renderNode (?)
     renderCurrentNode: function(node, basepath) {
         var parsed = this.parseRelativePath(basepath, node.pathname);
-        //htmlStr = this.renderLink( parsed, parsed );
-        htmlStr = parsed;
-        htmlStr += ' ('+node.size+')'; // %FIXME: DRY
-        return htmlStr;
+        return parsed + ' ('+node.size+')'; // %FIXME: DRY
     },
 
     // html builder
     renderParentNode: function(node, basepath) {
         var parsed = this.parseRelativePath(basepath, node.pathname);
-        htmlStr = this.renderLink( parsed, parsed );
-        return htmlStr;
+        return this.renderLink( parsed, parsed );
     },
 
     // Create markup for a html <a> tag
     // html builder (??)
     renderLink: function(title, subpath) {
         var href = this.getAppURL()+'?path='+subpath;
-        var htmlStr = '<a href="'+href+'" data-subpath="'+subpath+'">';
-        htmlStr += title;
-        htmlStr += '</a>';
-        return htmlStr;
+        return '<a href="'+href+'" data-subpath="'+subpath+'">' + title + '</a>';
     },
 
     // html builder
@@ -62,30 +55,18 @@ var Utils = {
     //  ~ %NOTE: tightly coupled to api response format
     // html builder
     buildChildList: function(nodes,basepath) {
+        var li, i, n, htmlStr;
         var ul = $('<ul>');
-        var li, n, htmlStr;
 
-        /*
-        // parent node
-        var parentNode = this.findParentNode(nodes);
-        var parsed = this.parseRelativePath(basepath, parentNode.pathname);
-        htmlStr = this.renderLink( 'parent', parsed );
-        htmlStr += ' ('+parentNode.size+')';
-        li = $('<li>');
-        li.html(htmlStr).appendTo(ul);
-        */
-
-        // child nodes
-        for (var i = 0; i < nodes.length; i++) {
+        // Create & append one <li> element per child node
+        for (i = 0; i < nodes.length; i++) {
             n = nodes[i];
             if (n.is_parent_path || n.is_self_path) {
                 continue;
             }
             parsed = this.parseRelativePath(basepath, n.pathname);
-            htmlStr = this.renderLink( parsed, parsed );
-            htmlStr += ' ('+n.size+')';
-            li = $('<li>');
-            li.html(htmlStr).appendTo(ul);
+            htmlStr = this.renderLink( parsed, parsed ) + ' ('+n.size+')';
+            li = $('<li>').html(htmlStr).appendTo(ul);
         }
         return ul;
     },
