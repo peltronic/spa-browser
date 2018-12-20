@@ -79,6 +79,7 @@
 -->
 <script src="/js/libs/utils.js"></script>
 <script src="/js/libs/Node.js"></script>
+<script src="/js/libs/Navigator.js"></script>
 
 <script type="text/javascript">
 
@@ -115,6 +116,10 @@ $( document ).ready(function() {
                 current = appConfigs.home;
             }
             $('form#form-upload_file input[name=dst]').val(current);
+
+
+            // Call 'index' API at the current node (folder), to get parent folder 
+            //   and child nodes (files or folders)
             return $.ajax({
                 url: '/api/index.php',
                 type: 'GET',
@@ -124,24 +129,26 @@ $( document ).ready(function() {
             })
         })
         .then( function(response) {
-            console.log("App Configs");
-            console.log(appConfigs);
-            var currentNode = Utils.findSelfNode(response.nodes);
-            var parentNode = Utils.findParentNode(response.nodes);
-            $('#val-current').html( Utils.renderCurrentNode(currentNode, appConfigs.basepath) );
-            $('#val-parent').html( Utils.renderParentNode(parentNode, appConfigs.basepath) );
-            $('div.meta').html( Utils.buildMeta(response.nodes) );
-            $('div.children').html( Utils.buildChildList(response.nodes,appConfigs.basepath) );
+            // Process response of 'index' API call 
+            var navigator = new Navigator(response.nodes);
+            $('#val-current').html( navigator.renderCurrent(appConfigs.basepath) );
+            $('#val-parent').html( navigator.renderParent(appConfigs.basepath) );
+            $('div.meta').html( navigator.buildMeta() );
+            $('div.children').html( navigator.buildChildList(appConfigs.basepath) );
         });
     } // doInit()
 
-    $(document).on('click', 'div.children ul li a', function(e) {
+    //$(document).on('click', 'div.children ul li a', function(e) {
+    $(document).on('click', 'a.clickme_to_navigate', function(e) {
         e.preventDefault();
 
         var context = $(this);
         current = context.data('subpath');
         $('#val-current').html(current);
         $('form#form-upload_file input[name=dst]').val(current);
+
+        // Call 'index' API at the current node (folder), to get updated parent folder 
+        //   and child nodes (files or folders)
         (function () {
             return $.ajax({
                 url: '/api/index.php',
@@ -152,13 +159,14 @@ $( document ).ready(function() {
             })
         })()
         .then( function(response) {
+            // Process response of 'index' API call 
+            // %FIXME: current should come from nodes in response (?)
             window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+current ); // update browser URL %TODO: encasualte in function
-            var currentNode = Utils.findSelfNode(response.nodes);
-            var parentNode = Utils.findParentNode(response.nodes);
-            $('#val-current').html( Utils.renderCurrentNode(currentNode, appConfigs.basepath) );
-            $('#val-parent').html( Utils.renderParentNode(parentNode, appConfigs.basepath) );
-            $('div.meta').html( Utils.buildMeta(response.nodes) );
-            $('div.children').html( Utils.buildChildList(response.nodes,appConfigs.basepath) );
+            var navigator = new Navigator(response.nodes);
+            $('#val-current').html( navigator.renderCurrent(appConfigs.basepath) );
+            $('#val-parent').html( navigator.renderParent(appConfigs.basepath) );
+            $('div.meta').html( navigator.buildMeta() );
+            $('div.children').html( navigator.buildChildList(appConfigs.basepath) );
         })
         return false;
     });

@@ -1,7 +1,7 @@
 
 // --- Node ---
 
-function Node(nodeType, size, filename) {
+function Node(nodeType, size, pathname, filename) {
    this.nodeType = nodeType;
    this.size = size;
    this.pathname = pathname;
@@ -12,11 +12,6 @@ Node.prototype.getNodeType = function() {
     return this.nodeType;
 }
 
-// Node is rendered as the current node (selected folder or file)
-Node.prototype.renderAsCurrent = function(basepath) {
-    var parsed = Utils.parseRelativePath(basepath, this.pathname);
-    return parsed + ' ('+this.size+')'; // %FIXME: DRY
-}
 
 
 // --- FileNode ---
@@ -40,8 +35,3 @@ function FolderNode(size, pathname, filename, isParentPath, isSelfPath) {
 FolderNode.prototype = Object.create(Node.prototype);
 FolderNode.prototype.constructor = FolderNode;
 
-// Node is rendered as a parent for navigation purposes (folders only)
-FolderNode.prototype.renderAsParent = function(basepath) {
-    var parsed = Utils.parseRelativePath(basepath, this.pathname);
-    return Utils.renderLink( parsed, parsed );
-}

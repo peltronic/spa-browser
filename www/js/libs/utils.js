@@ -4,44 +4,19 @@ var Utils = {
         return '//' + location.host + location.pathname;
     },
 
-    countFiles: function(nodes) {
-        return nodes.reduce( function(acc, n) {
-            return n.is_file ? ++acc : acc;
-        }, 0);
+    // Give a full path and a basepath which is a subset of the full path, parse out the relative path
+    // (the part that comes after the basepath).
+    parseRelativePath: function(basepath, fullpath) {
+        var re = new RegExp(basepath);
+        var parsed = fullpath.replace(re, '');
+        return parsed.replace(/^\/|\/$/g, ''); // remove any trailing or leading slashes
     },
 
-    countFolders: function(nodes) {
-        return nodes.reduce( function(acc, n) {
-            if ( !n.is_file && !n.is_self_path && !n.is_parent_path) {
-                acc++; // increase count if a folder except for 'self' (single dot) and 'parent (double dot)
-            } 
-            return acc;
-        }, 0);
-    },
+    init: function() {
+    }
+}
 
-    // html builder
-    // render: returns html
-    // build: returns jquery object
-    //  [ ] set basepath in 'class' contructor
-    //  %FIXME DRY: just refactor to renderNode (?)
-    renderCurrentNode: function(node, basepath) {
-        var parsed = this.parseRelativePath(basepath, node.pathname);
-        return parsed + ' ('+node.size+')'; // %FIXME: DRY
-    },
-
-    // html builder
-    renderParentNode: function(node, basepath) {
-        var parsed = this.parseRelativePath(basepath, node.pathname);
-        return this.renderLink( parsed, parsed );
-    },
-
-    // Create markup for a html <a> tag
-    // html builder (??)
-    renderLink: function(title, subpath) {
-        var href = this.getAppURL()+'?path='+subpath;
-        return '<a href="'+href+'" data-subpath="'+subpath+'">' + title + '</a>';
-    },
-
+    /*
     // html builder
     buildMeta: function(nodes) {
         var ul = $('<ul>');
@@ -69,15 +44,38 @@ var Utils = {
         }
         return ul;
     },
-
-    // Give a full path and a basepath which is a subset of the full path, parse out the relative path
-    // (the part that comes after the basepath).
-    parseRelativePath: function(basepath, fullpath) {
-        var re = new RegExp(basepath);
-        var parsed = fullpath.replace(re, '');
-        return parsed.replace(/^\/|\/$/g, ''); // remove any trailing or leading slashes
+    */
+    /*
+    // html builder
+    // render: returns html
+    // build: returns jquery object
+    //  [ ] set basepath in 'class' contructor
+    //  %FIXME DRY: just refactor to renderNode (?)
+    renderCurrentNode: function(node, basepath) {
+        var parsed = this.parseRelativePath(basepath, node.pathname);
+        return parsed + ' ('+node.size+')'; // %FIXME: DRY
     },
 
+    // html builder
+    renderParentNode: function(node, basepath) {
+        var parsed = this.parseRelativePath(basepath, node.pathname);
+        return this.renderLink( parsed, parsed );
+    },
+
+    countFiles: function(nodes) {
+        return nodes.reduce( function(acc, n) {
+            return n.is_file ? ++acc : acc;
+        }, 0);
+    },
+
+    countFolders: function(nodes) {
+        return nodes.reduce( function(acc, n) {
+            if ( !n.is_file && !n.is_self_path && !n.is_parent_path) {
+                acc++; // increase count if a folder except for 'self' (single dot) and 'parent (double dot)
+            } 
+            return acc;
+        }, 0);
+    },
     // Find parent node if any in a set of nodes returned from the api
     findParentNode: function(nodes) {
         return nodes.find( function(n) {
@@ -92,6 +90,6 @@ var Utils = {
         });
     },
 
-    init: function() {
-    }
-}
+
+
+    */

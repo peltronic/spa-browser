@@ -55,6 +55,7 @@ Jira:
 
 %%% misc thoughts
 
+~ how to reprsent files (vs folders) as "current"?
 ~ design: identify "is-a", "has-a", other OO relationships
 ~ avoid technical debt, address it sooner rather than later when it builds up
 ~ identify what 'blocks' modules we have built already and can be used, or are available as 3rd-party libraries and can simply be plugged-in (example: Pluuploader).
