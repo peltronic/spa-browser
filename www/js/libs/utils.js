@@ -45,9 +45,8 @@ var Utils = {
     // html builder
     buildMeta: function(nodes) {
         var ul = $('<ul>');
-        var li;
-        li = $('<li>').html( 'File count: '+this.countFiles(nodes) ).appendTo(ul);
-        li = $('<li>').html( 'Folder count: '+this.countFolders(nodes) ).appendTo(ul);
+        $('<li>').html( 'File count: '+this.countFiles(nodes) ).appendTo(ul);
+        $('<li>').html( 'Folder count: '+this.countFolders(nodes) ).appendTo(ul);
         return ul;
     },
 
@@ -55,7 +54,7 @@ var Utils = {
     //  ~ %NOTE: tightly coupled to api response format
     // html builder
     buildChildList: function(nodes,basepath) {
-        var li, i, n, htmlStr;
+        var i, n, htmlStr;
         var ul = $('<ul>');
 
         // Create & append one <li> element per child node
@@ -66,7 +65,7 @@ var Utils = {
             }
             parsed = this.parseRelativePath(basepath, n.pathname);
             htmlStr = this.renderLink( parsed, parsed ) + ' ('+n.size+')';
-            li = $('<li>').html(htmlStr).appendTo(ul);
+            $('<li>').html(htmlStr).appendTo(ul);
         }
         return ul;
     },
