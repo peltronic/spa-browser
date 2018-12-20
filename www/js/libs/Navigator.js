@@ -1,13 +1,18 @@
 
 function Navigator(nodes) {
-    this.doReset();
+    this.parentNode = null;
+    this.currentNode = null;
+    this.childNodes = [];
+    this.folderCount = 0; // children only
+    this.fileCount = 0;
+
     if ( 'undefined'!==typeof(nodes) ) {
         // %TODO: check if array
         this.update(nodes);
     }
 }
 
-// %TODO :rename to refresh (?)
+// %TODO :rename to refreshFromAPI or etc (?)
 Navigator.prototype.update = function(nodes) {
 
     var i, nIter;
@@ -35,19 +40,37 @@ Navigator.prototype.update = function(nodes) {
     }
 }
 
+// Push down to a child node which is a file and refresh
+// %FIXME: how is this going to work clicking on a file in search results?
+Navigator.prototype.pushFile = function(fileNode) {
+    this.parentNode = this.currentNode;
+    this.currentNode = fileNode;
+    //this.childNodes = []; // no, keep child nodes there, just don't show them
+}
+
+Navigator.prototype.popFile = function() {
+    this.currentNode = this.parentNode;
+    //this.parentNode = ; // ???
+    //this.childNodes = []; // no, keep child nodes there, just don't show them
+}
+
 // Creates a <ul> list and adds nodes as <li> elements to it
 Navigator.prototype.buildChildList = function(basepath) {
     //  ~ %NOTE: tightly coupled to api response format
     var i, nObj, htmlStr;
     var ul = $('<ul>');
 
-    // Create & append one <li> element per child node
-    for (i = 0; i < this.childNodes.length; i++) {
-        nObj = this.childNodes[i];
-        parsed = Utils.parseRelativePath(basepath, nObj.pathname);
-        htmlStr = this.renderLink( parsed, parsed ) + ' ('+nObj.size+')';
-        $('<li>').attr('data-nodetype', nObj.nodeType).html(htmlStr).appendTo(ul);
-    }
+    if ('folder' === this.currentNode.nodeType) {
+        // Create & append one <li> element per child node
+        for (i = 0; i < this.childNodes.length; i++) {
+            nObj = this.childNodes[i];
+            parsed = Utils.parseRelativePath(basepath, nObj.pathname);
+            htmlStr = this.renderLink( parsed, parsed ) + ' ('+nObj.size+')';
+            $('<li>').attr('data-nodetype', nObj.nodeType).html(htmlStr)
+                     .attr('data-guid', i) // poor-man's hash to locate from associated DOM (%FIXME: explain better)
+                     .appendTo(ul);
+        }
+    } // otherwise, files have no children...
     return ul;
 }
 Navigator.prototype.buildMeta = function() {

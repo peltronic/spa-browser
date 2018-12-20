@@ -143,7 +143,7 @@ $( document ).ready(function() {
     //$(document).on('click', 'div.children ul li a', function(e) {
     $(document).on('click', 'a.clickme_to_navigate', function(e) {
         e.preventDefault();
-        var nodeType;
+        var nodeType, selectedFileNode=null;
         var context = $(this);
 
         current = context.data('subpath');
@@ -151,9 +151,21 @@ $( document ).ready(function() {
         $('form#form-upload_file input[name=dst]').val(current);
 
         nodeType = context.closest('li').data('nodetype');
+// HERE
         if ( 'file' == nodeType ) {
             // navigating into file
-            $('#val-parent').html( navigator.renderCurrent(appConfigs.basepath) );
+            selectedFile = navigator.childNodes[context.closest('li').data('guid')]; // %TODO %CHECKME
+            navigator.pushFile(selectedFile);
+            $('#val-current').html( navigator.renderCurrent(appConfigs.basepath) );
+            $('#val-parent').html( navigator.renderParent(appConfigs.basepath) );
+            $('div.meta').html( navigator.buildMeta() );
+            $('div.children').html( navigator.buildChildList(appConfigs.basepath) );
+
+            //$('#val-parent').html( navigator.renderCurrent(appConfigs.basepath) );
+            // %TODO; how do we know what node in the Navigator struct we clicked on from the DOM info??
+            // %TODO; shoudl be renderAsParent but pass current? how to do this?
+            // => actually need to call update here, w/o going to api to get the new node list
+            // %TODO: make this a link (add as method argument, and combine render...() methods into one
         } else {
             // navigating into a folder
             // %FIXME DRY
