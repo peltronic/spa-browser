@@ -97,6 +97,7 @@ $( document ).ready(function() {
     // Global 'state'...
     var appConfigs = Array;
     var current = null; // you are 'here'
+    var navigator = new Navigator();
 
     // First call server to get 'home'...
 
@@ -130,7 +131,8 @@ $( document ).ready(function() {
         })
         .then( function(response) {
             // Process response of 'index' API call 
-            var navigator = new Navigator(response.nodes);
+            //var navigator = new Navigator(response.nodes);
+            navigator.update(response.nodes);
             $('#val-current').html( navigator.renderCurrent(appConfigs.basepath) );
             $('#val-parent').html( navigator.renderParent(appConfigs.basepath) );
             $('div.meta').html( navigator.buildMeta() );
@@ -141,33 +143,44 @@ $( document ).ready(function() {
     //$(document).on('click', 'div.children ul li a', function(e) {
     $(document).on('click', 'a.clickme_to_navigate', function(e) {
         e.preventDefault();
-
+        var nodeType;
         var context = $(this);
+
         current = context.data('subpath');
         $('#val-current').html(current);
         $('form#form-upload_file input[name=dst]').val(current);
 
-        // Call 'index' API at the current node (folder), to get updated parent folder 
-        //   and child nodes (files or folders)
-        (function () {
-            return $.ajax({
-                url: '/api/index.php',
-                type: 'GET',
-                data: {
-                    src: current
-                }
-            })
-        })()
-        .then( function(response) {
-            // Process response of 'index' API call 
-            // %FIXME: current should come from nodes in response (?)
-            window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+current ); // update browser URL %TODO: encasualte in function
-            var navigator = new Navigator(response.nodes);
-            $('#val-current').html( navigator.renderCurrent(appConfigs.basepath) );
-            $('#val-parent').html( navigator.renderParent(appConfigs.basepath) );
-            $('div.meta').html( navigator.buildMeta() );
-            $('div.children').html( navigator.buildChildList(appConfigs.basepath) );
-        })
+        nodeType = context.closest('li').data('nodetype');
+        if ( 'file' == nodeType ) {
+            // navigating into file
+            $('#val-parent').html( navigator.renderCurrent(appConfigs.basepath) );
+        } else {
+            // navigating into a folder
+            // %FIXME DRY
+
+            // Call 'index' API at the current node (folder), to get updated parent folder 
+            //   and child nodes (files or folders)
+            (function () {
+                return $.ajax({
+                    url: '/api/index.php',
+                    type: 'GET',
+                    data: {
+                        src: current
+                    }
+                })
+            })()
+            .then( function(response) {
+                // Process response of 'index' API call 
+                // %FIXME: current should come from nodes in response (?)
+                window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+current ); // update browser URL %TODO: encasualte in function
+                //var navigator = new Navigator(response.nodes);
+                navigator.update(response.nodes);
+                $('#val-current').html( navigator.renderCurrent(appConfigs.basepath) );
+                $('#val-parent').html( navigator.renderParent(appConfigs.basepath) );
+                $('div.meta').html( navigator.buildMeta() );
+                $('div.children').html( navigator.buildChildList(appConfigs.basepath) );
+            });
+        }
         return false;
     });
 

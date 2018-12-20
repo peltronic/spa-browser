@@ -1,11 +1,18 @@
 
 function Navigator(nodes) {
+    this.doReset();
+    if ( 'undefined'!==typeof(nodes) ) {
+        // %TODO: check if array
+        this.update(nodes);
+    }
+}
+
+// %TODO :rename to refresh (?)
+Navigator.prototype.update = function(nodes) {
+
     var i, nIter;
-    this.parentNode = null;
-    this.currentNode = null;
-    this.childNodes = [];
-    this.folderCount = 0; // children only
-    this.fileCount = 0;
+
+    this.doReset();
 
     // set nodes[]
     for ( i = 0 ; i < nodes.length; i++ ) {
@@ -39,7 +46,7 @@ Navigator.prototype.buildChildList = function(basepath) {
         nObj = this.childNodes[i];
         parsed = Utils.parseRelativePath(basepath, nObj.pathname);
         htmlStr = this.renderLink( parsed, parsed ) + ' ('+nObj.size+')';
-        $('<li>').html(htmlStr).appendTo(ul);
+        $('<li>').attr('data-nodetype', nObj.nodeType).html(htmlStr).appendTo(ul);
     }
     return ul;
 }
@@ -69,6 +76,14 @@ Navigator.prototype.renderLink = function(title, subpath) {
     // html builder (??)
     var href = Utils.getAppURL()+'?path='+subpath;
     return '<a href="'+href+'" class="clickme_to_navigate" data-subpath="'+subpath+'">' + title + '</a>';
+}
+
+Navigator.prototype.doReset = function() {
+    this.parentNode = null;
+    this.currentNode = null;
+    this.childNodes = [];
+    this.folderCount = 0; // children only
+    this.fileCount = 0;
 }
 
 

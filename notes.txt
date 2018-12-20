@@ -4,8 +4,11 @@ http://www.dev-maplarge.com/app.html
 http://www.dev-maplarge.com/api/index.php?src=/treeroot/foo
 
 %TODO:
+[ ] => use node object for navigation (when clicking)
 [ ] convert ids to classes for widget
 [ ] when file is 'current', make its folder the parent, no children
+    ~ dont' call index api
+    ~ remove data-subpath in links and track current from Navigation object
 [ ] make current a node (so we can display if it's a file or folder, etc)
 [ ] => make Data & ops have tabs, prototype object for fileThingy with child objects for file and folder, that each know how to render their own info
 

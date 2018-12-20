@@ -15,6 +15,36 @@ if ( empty($attrs['src']) ) {
 $browser = new Browser($current);
 $response = ['nodes'=>$browser->getNodes(), 'attrs'=>$attrs];
 
+/*
+if ( is_dir($current) ) {
+    $browser = new Browser($current);
+    $response = ['nodes'=>$browser->getNodes(), 'attrs'=>$attrs];
+} else {
+    // File %TODO
+    $response = [
+        'attrs'=> $attrs,
+        'nodes'=> [
+            [
+               'is_file'=> false,
+               'pathname'=> $current,
+               'filename'=> '..',
+               'is_parent_path'=> true,
+               'is_self_path'=> false,
+               'size'=> 'tbd',
+            ],
+            [
+               'is_file'=> true,
+               'pathname'=> 'tbd',
+               'filename'=> 'tbd',
+               'is_parent_path'=> false,
+               'is_self_path'=> true,
+               'size'=> 'tbd',
+            ],
+        ]
+    ];
+}
+ */
+
 // ---
 
 // %TODO DRY: ->respondAndExit(...)
