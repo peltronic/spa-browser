@@ -4,6 +4,26 @@ http://www.dev-maplarge.com/app.html
 http://www.dev-maplarge.com/api/index.php?src=/treeroot/foo
 
 %TODO:
+[ ] use strict
+[ ] SECURITY: disallow outside of sandbox!!!
+[ ] set root
+[ ] ok to show full path, but don't allow user to go above root
+[ ] fill text files with dummy lorem ipsum contents
+[ ] .txt file preview browser??
+[ ] for simplicity just deal in absolute paths
+[ ] download
+[ ] test upload
+[ ] implement search
+[ ] dialog widget
+[ ] Don't worry about error corner cases (??)
+    ~ security in the API (eg only make certain sub-trees visible, blacklist, whitelist, etc)
+[ ] move, delete, copy files & folders
+
+[ ] => use node object for navigation (when clicking)
+[ ] convert ids to classes for widget
+[ ] when file is 'current', make its folder the parent, no children
+    ~ dont' call index api
+    ~ remove data-subpath in links and track current from Navigation object
 [ ] make current a node (so we can display if it's a file or folder, etc)
 [ ] => make Data & ops have tabs, prototype object for fileThingy with child objects for file and folder, that each know how to render their own info
 

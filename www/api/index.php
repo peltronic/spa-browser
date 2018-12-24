@@ -1,19 +1,28 @@
 <?php
 require_once('../../libs/Browser.php'); // %FIXME
-$basepath = "/Users/petergorgone/workspace/study/MapLarge";
-$home = $basepath."/"."treeroot";
 
-$attrs = $_GET;
+$attrs = $_GET; // eg: GET /index?src=root/foo/bar
+$nodes = [];
+$errors = [];
 
-//GET     /index?src=root/foo/bar
 if ( empty($attrs['src']) ) {
-    $current = $home;
+    $errors[] = "Missing required parameter 'src'";
 } else {
-    $current = $basepath."/".$attrs['src']; // %FIXME: verify valid & exists
+    $e = Browser::checkPath($attrs['src']);
+    if ( count($e) ) {
+        $errors = array_merge($errors,$e);
+    } else {
+        $browser = new Browser($attrs['src']);
+        $nodes = $browser->getNodes();
+    }
 }
 
-$browser = new Browser($current);
-$response = ['nodes'=>$browser->getNodes(), 'attrs'=>$attrs];
+// extra safety check
+if ( !Browser::isWhitelisted($attrs['src']) ) {
+    throw new \Exception("Access denied");
+}
+
+$response = [ 'attrs'=>$attrs, 'nodes'=>$nodes, 'errors'=>$errors ];
 
 // ---
 

@@ -4,3 +4,12 @@
     margin: 25px 0;
     border: solid 3px #c5c5c5;
 }
+.parent ul {
+    list-style: none;
+    margin: 0;
+}
+.parent ul li {
+}
+.crate-parent > * {
+    display: inline-block;
+}

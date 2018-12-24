@@ -24,18 +24,17 @@
                 </section>
         
                 <section id="widget-2" class="widget">
-                    <h2>Widget 2</h2>
-                </section>
-        
-                <section id="widget-3" class="widget">
 
-                    <h2 class="subtitle is-4">Widget 3</h2>
+                    <h2 class="subtitle is-4">Widget 2</h2>
 
                     <article class="columns">
                         <div class="crate-navigation column">
                             <h5 class="subtitle is-5">Navigation</h6>
                             <div class="content">
-                                <p class="">Parent: <span id="val-parent"></span></p>
+                                <div class="crate-parent">
+                                    <p>Parent:</p>
+                                    <span class="parent"></span>
+                                </div>
                                 <p class="">Current: <span id="val-current"></span></p>
                                 <div class="children"></div> <!-- list of child nodes -->
                             </div>
@@ -58,13 +57,32 @@
                                         <input type="file" name="file" id="file_to_upload">
                                     </label>
                                     <input type="hidden" name="dst" value="">
-                                    <input type="submit" value="Submit" id="clickme_to_submit"/>
+                                    <input type="submit" value="Upload">
                                 </form> 
                             </div>
                         </div>
                     </article>
 
+                    <div class="root-folder">
+                        <div class="tag-show">
+                        Root Folder: <span class="show-val"></span> | <a href="#" class="clickme-to_edit">Edit</a>
+                        </div>
+                        <div class="tag-edit">
+                            <form class="form-edit_root">
+                                <label>
+                                    <input type="text" name="rootpath">
+                                </label>
+                                <input type="submit" value="Save">
+                            </form> 
+                        </div>
+                    </div>
+
                 </section>
+
+                <section id="widget-3" class="widget">
+                    <h2>Widget 3</h2>
+                </section>
+        
 
             </div> <!-- #maplarge-app -->
 
@@ -79,6 +97,7 @@
 -->
 <script src="/js/libs/utils.js"></script>
 <script src="/js/libs/Node.js"></script>
+<script src="/js/libs/Navigator.js"></script>
 
 <script type="text/javascript">
 
@@ -96,70 +115,69 @@ $( document ).ready(function() {
     // Global 'state'...
     var appConfigs = Array;
     var current = null; // you are 'here'
+    var navigator = new Navigator();
 
-    // First call server to get 'home'...
+    
+    // 'context' is the associated 'li' element for the node
+    function doUpdate(context) {
+        var nodeType = context.data('nodetype');
+        var selectedNode ;
 
-    function doInit() {
-        (function () {
-            return $.ajax({
-                url: '/api/constants.php',
-                type: 'GET'
-            })
-        })()
-        .then( function(response) {
-            var urlParams = new URLSearchParams(window.location.search);
-            appConfigs = response.configs; // set 'global'
-            if ( urlParams.has('path') ) {
-                current = urlParams.get('path');
-            } else {
-                current = appConfigs.home;
-            }
-            $('form#form-upload_file input[name=dst]').val(current);
-            return $.ajax({
-                url: '/api/index.php',
-                type: 'GET',
-                data: {
-                    src: current
-                }
-            })
-        })
-        .then( function(response) {
-            console.log("App Configs");
-            console.log(appConfigs);
-            var currentNode = Utils.findSelfNode(response.nodes);
-            var parentNode = Utils.findParentNode(response.nodes);
-            $('#val-current').html( Utils.renderCurrentNode(currentNode, appConfigs.basepath) );
-            $('#val-parent').html( Utils.renderParentNode(parentNode, appConfigs.basepath) );
-            $('div.meta').html( Utils.buildMeta(response.nodes) );
-            $('div.children').html( Utils.buildChildList(response.nodes,appConfigs.basepath) );
-        });
-    } // doInit()
+        // %TODO %CHECKME %ENCAPSULTE
+        if ( 'parent'===context.data('guid') ) {
+            selectedNode = navigator.parentNode;
+        } else {
+            selectedNode = navigator.childNodes[context.data('guid')]; 
+        }
 
-    $(document).on('click', 'div.children ul li a', function(e) {
+        if ( 'file' == nodeType ) {
+            // navigating into file
+            navigator.pushFile(selectedNode);
+            $('#val-current').html( navigator.renderCurrent() );
+            $('form#form-upload_file input[name=dst]').val(navigator.currentNode);
+            $('.meta').html( navigator.buildMeta() );
+            $('.children').html( navigator.buildChildList() );
+            $('.parent').html( navigator.buildParentList() );
+
+            // %TODO; how do we know what node in the Navigator struct we clicked on from the DOM info??
+            // %TODO; shoudl be renderAsParent but pass current? how to do this?
+            // => actually need to call update here, w/o going to api to get the new node list
+            // %TODO: make this a link (add as method argument, and combine render...() methods into one
+        } else {
+            // navigating into a folder
+            // %FIXME DRY
+
+            // Call 'index' API at the current node (folder), to get updated parent folder 
+            //   and child nodes (files or folders)
+            (function () {
+                return $.ajax({
+                    url: '/api/index.php',
+                    type: 'GET',
+                    data: {
+                        src: selectedNode.pathname
+                    }
+                })
+            })()
+            .then( function(response) {
+                // Process response of 'index' API call 
+                // %FIXME: current should come from nodes in response (?)
+                window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+current ); // update browser URL %TODO: encasualte in function
+                //var navigator = new Navigator(response.nodes);
+                navigator.update(response.nodes);
+                $('#val-current').html( navigator.renderCurrent() );
+                $('.meta').html( navigator.buildMeta() );
+                $('.children').html( navigator.buildChildList() );
+                $('.parent').html( navigator.buildParentList() );
+            });
+        }
+    }
+
+
+    //$(document).on('click', '.children ul li a', function(e) {
+    $(document).on('click', 'a.clickme_to_navigate', function(e) {
         e.preventDefault();
-
-        var context = $(this);
-        current = context.data('subpath');
-        $('#val-current').html(current);
-        $('form#form-upload_file input[name=dst]').val(current);
-        (function () {
-            return $.ajax({
-                url: '/api/index.php',
-                type: 'GET',
-                data: {
-                    src: current
-                }
-            })
-        })()
-        .then( function(response) {
-            window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+current ); // update browser URL %TODO: encasualte in function
-            var currentNode = Utils.findSelfNode(response.nodes);
-            var parentNode = Utils.findParentNode(response.nodes);
-            $('#val-current').html( Utils.renderCurrentNode(currentNode, appConfigs.basepath) );
-            $('#val-parent').html( Utils.renderParentNode(parentNode, appConfigs.basepath) );
-            $('div.meta').html( Utils.buildMeta(response.nodes) );
-            $('div.children').html( Utils.buildChildList(response.nodes,appConfigs.basepath) );
-        })
+        var context = $(this).closest('li');
+        doUpdate(context);
         return false;
     });
 
@@ -172,7 +190,7 @@ $( document ).ready(function() {
         
         //formdata.append("CustomField", "This is some extra data, testing"); // use this and remvoe hidden field %TODO
 
-        //$("#clickme_to_submit").prop("disabled", true);
+        //$("#clickme-to_submit").prop("disabled", true);
 
         $.ajax({
             type: 'POST',
@@ -181,9 +199,9 @@ $( document ).ready(function() {
             cache: false,
             contentType: false,
             processData: false,
-            //timeout: 600000,
             success: function (response) {
-                $('div.children').html( Utils.buildChildList(response.nodes,appConfigs.basepath) );
+                $('.children').html( navigator.buildChildList() );
+                //$('.parent').html( navigator.buildParentList() );
             },
             error: function (e) {
             }
@@ -191,7 +209,48 @@ $( document ).ready(function() {
 
     });
 
-    doInit();
+    $(document).on('submit', 'form.form-edit_root', function (e) {
+        e.preventDefault();
+        var thisForm = $(this);
+        $.ajax({
+            url: '/api/filetype.php',
+            type: 'POST',
+            dataType: 'json',
+            data    : thisForm.serialize(),
+            success: function (response) {
+                console.log('success');
+                (function () {
+                    return $.ajax({
+                        url: '/api/index.php',
+                        type: 'GET',
+                        data: {
+                            src: response.rootpath
+                        }
+                    })
+                })()
+                .then( function(response) {
+                    // Process response of 'index' API call 
+                    // %FIXME: current should come from nodes in response (?)
+                    current = response.attrs.src; // %FIXME: find node with single dot...
+                    //var navigator = new Navigator(response.nodes);
+                    navigator.setRootpath(response.attrs.src);
+                    navigator.update(response.nodes);
+                    window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+navigator.rootpath ); // update browser URL %TODO: encasualte in function
+                    $('#val-current').html( navigator.renderCurrent() );
+                    $('.meta').html( navigator.buildMeta() );
+                    $('.children').html( navigator.buildChildList() );
+                    $('.parent').html( navigator.buildParentList() );
+                });
+            },
+            error: function (e) {
+                console.log('error');
+                // %TODO: display error
+            }
+        });
+
+    });
+
+    //doInit();
 
 
 

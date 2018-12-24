@@ -7,6 +7,7 @@ $basepath = "/Users/petergorgone/workspace/study/MapLarge"; // %FIXME: take from
 $attrs = $_POST;
 $errors = [];
 
+
 try { 
     if ( empty($attrs['dst']) ) {
         throw new Exception('Destination path parameter required');
@@ -19,6 +20,11 @@ try {
         throw new Exception('Destination directory '.$current.' is not writable');
     }
     //print_r($attrs, $_FILES);
+
+    // extra safety check
+    if ( !self::isWhitelisted($current) ) {
+        throw new \Exception("Access denied");
+    }
 
     if ( 0 < $_FILES['file']['error'] ) {
         $errors[] = $_FILES['file']['error'];
