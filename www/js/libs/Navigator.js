@@ -124,7 +124,8 @@ Navigator.prototype.buildMeta = function() {
 // %TODO: what to do in file case? or , this can only be folder, have other mechanism
 // for highlighting a file (?)
 Navigator.prototype.renderCurrent = function() {
-    var parsed = Utils.parseRelativePath(this.rootpath, this.currentNode.pathname);
+    //var parsed = Utils.parseRelativePath(this.rootpath, this.currentNode.pathname);
+    var parsed = this.currentNode.pathname;
     return parsed + ' ('+this.currentNode.size+')'; // %FIXME: DRY
 }
 

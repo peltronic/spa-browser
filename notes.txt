@@ -4,6 +4,9 @@ http://www.dev-maplarge.com/app.html
 http://www.dev-maplarge.com/api/index.php?src=/treeroot/foo
 
 %TODO:
+[ ] send direct api links
+http://www.dev-maplarge.com/api/index.php?src=/treeroot/foo/file1.txt
+[ ] Need to store rootpath in server sesssion or equiv. otherwise re-load page (deep linkable) doesn't really work (needs to be reset each time).
 [ ] use strict
 [ ] SECURITY: disallow outside of sandbox!!!
 [ ] set root

@@ -114,9 +114,42 @@ $( document ).ready(function() {
 
     // Global 'state'...
     var appConfigs = Array;
-    var current = null; // you are 'here'
     var navigator = new Navigator();
 
+    function doInit() {
+
+        // %FIXME: can they hack rootpath directly in session Storage??
+        var rootpath = window.sessionStorage.getItem("rootpath");
+        if ( null === rootpath ) {
+            return; // do nothing...
+        }
+
+        // Otherwise load from the link in browser (deep-linking)...
+        var urlParams = new URLSearchParams(window.location.search);
+        var browserURL =  urlParams.has('path') ? urlParams.get('path') : rootpath; // %TODO : add comment
+
+        navigator.setRootpath(rootpath); // NOTE rootpath is unchanged
+        $('.root-folder .show-val').html(navigator.rootpath);
+
+        (function () {
+            return $.ajax({
+                url: '/api/index.php',
+                type: 'GET',
+                data: {
+                    src: browserURL
+                }
+            })
+        })()
+        .then( function(response) {
+            // Process response of 'index' API call 
+            navigator.update(response.nodes);
+            window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+browserURL ); // update browser URL %TODO: encasualte in function
+            $('#val-current').html( navigator.renderCurrent() );
+            $('.meta').html( navigator.buildMeta() );
+            $('.children').html( navigator.buildChildList() );
+            $('.parent').html( navigator.buildParentList() );
+        });
+    }
     
     // 'context' is the associated 'li' element for the node
     function doUpdate(context) {
@@ -160,10 +193,8 @@ $( document ).ready(function() {
             })()
             .then( function(response) {
                 // Process response of 'index' API call 
-                // %FIXME: current should come from nodes in response (?)
-                window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+current ); // update browser URL %TODO: encasualte in function
-                //var navigator = new Navigator(response.nodes);
                 navigator.update(response.nodes);
+                window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+navigator.currentNode.pathname ); // update browser URL %TODO: encasualte in function
                 $('#val-current').html( navigator.renderCurrent() );
                 $('.meta').html( navigator.buildMeta() );
                 $('.children').html( navigator.buildChildList() );
@@ -173,7 +204,6 @@ $( document ).ready(function() {
     }
 
 
-    //$(document).on('click', '.children ul li a', function(e) {
     $(document).on('click', 'a.clickme_to_navigate', function(e) {
         e.preventDefault();
         var context = $(this).closest('li');
@@ -212,6 +242,7 @@ $( document ).ready(function() {
     $(document).on('submit', 'form.form-edit_root', function (e) {
         e.preventDefault();
         var thisForm = $(this);
+        // %FIXME: DRY
         $.ajax({
             url: '/api/filetype.php',
             type: 'POST',
@@ -230,13 +261,12 @@ $( document ).ready(function() {
                 })()
                 .then( function(response) {
                     // Process response of 'index' API call 
-                    // %FIXME: current should come from nodes in response (?)
-                    current = response.attrs.src; // %FIXME: find node with single dot...
-                    //var navigator = new Navigator(response.nodes);
-                    navigator.setRootpath(response.attrs.src);
+                    navigator.setRootpath(response.attrs.src); // update the rootpath
                     navigator.update(response.nodes);
+                    window.sessionStorage.setItem("rootpath", navigator.rootpath);
                     window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+navigator.rootpath ); // update browser URL %TODO: encasualte in function
                     $('#val-current').html( navigator.renderCurrent() );
+                    $('.root-folder .show-val').html(navigator.rootpath);
                     $('.meta').html( navigator.buildMeta() );
                     $('.children').html( navigator.buildChildList() );
                     $('.parent').html( navigator.buildParentList() );
@@ -250,7 +280,7 @@ $( document ).ready(function() {
 
     });
 
-    //doInit();
+    doInit();
 
 
 
