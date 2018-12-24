@@ -1,49 +1,28 @@
 <?php
 require_once('../../libs/Browser.php'); // %FIXME
-$basepath = "/Users/petergorgone/workspace/study/MapLarge";
-$home = $basepath."/"."treeroot";
 
-$attrs = $_GET;
+$attrs = $_GET; // eg: GET /index?src=root/foo/bar
+$nodes = [];
+$errors = [];
 
-//GET     /index?src=root/foo/bar
 if ( empty($attrs['src']) ) {
-    $current = $home;
+    $errors[] = "Missing required parameter 'src'";
 } else {
-    $current = $basepath."/".$attrs['src']; // %FIXME: verify valid & exists
+    $e = Browser::checkPath($attrs['src']);
+    if ( count($e) ) {
+        $errors = array_merge($errors,$e);
+    } else {
+        $browser = new Browser($attrs['src']);
+        $nodes = $browser->getNodes();
+    }
 }
 
-$browser = new Browser($current);
-$response = ['nodes'=>$browser->getNodes(), 'attrs'=>$attrs];
-
-/*
-if ( is_dir($current) ) {
-    $browser = new Browser($current);
-    $response = ['nodes'=>$browser->getNodes(), 'attrs'=>$attrs];
-} else {
-    // File %TODO
-    $response = [
-        'attrs'=> $attrs,
-        'nodes'=> [
-            [
-               'is_file'=> false,
-               'pathname'=> $current,
-               'filename'=> '..',
-               'is_parent_path'=> true,
-               'is_self_path'=> false,
-               'size'=> 'tbd',
-            ],
-            [
-               'is_file'=> true,
-               'pathname'=> 'tbd',
-               'filename'=> 'tbd',
-               'is_parent_path'=> false,
-               'is_self_path'=> true,
-               'size'=> 'tbd',
-            ],
-        ]
-    ];
+// extra safety check
+if ( !Browser::isWhitelisted($attrs['src']) ) {
+    throw new \Exception("Access denied");
 }
- */
+
+$response = [ 'attrs'=>$attrs, 'nodes'=>$nodes, 'errors'=>$errors ];
 
 // ---
 
