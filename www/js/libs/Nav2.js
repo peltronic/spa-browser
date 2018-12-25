@@ -4,6 +4,14 @@ function Navigator() {
 
     return {
 
+        rootpath: null,
+        parentNode: null,
+        currentNode: null,
+        childNodes: [],
+        folderCount: 0, // children only
+        fileCount: 0,
+        selectedNode: null, // for move, copy, delete ops
+
         setRootpath: function(rootpath) {
             this.rootpath = rootpath;
         },
@@ -58,7 +66,7 @@ function Navigator() {
         },
         
         buildParentList: function(clickHandler) {
-            var ul = $('<ul>').addClass('tag-parent');
+            var ul = $('<ul>').addClass('list-parent');
             var nObj, htmlStr, parsed, li, a;
         
             // Create & append a single <li> element representing parent node
@@ -91,9 +99,9 @@ function Navigator() {
         // Creates a <ul> list and adds nodes as <li> elements to it
         //  ~ clickHanlder is a callback that takes care of app-level DOM manipulation
         buildChildList: function(clickHandler) {
-            var ul = $('<ul>').addClass('tag-children');
+            var ul = $('<ul>').addClass('list-children');
             var i, nObj, htmlStr, parsed, li, a;
-            var _this = this;
+            //var _this = this;
         
             if ('folder' === this.currentNode.nodeType) {
                 // Create & append one <li> element per child node
@@ -122,7 +130,7 @@ function Navigator() {
         
         buildMeta: function() {
             var htmlStr = '';
-            var ul = $('<ul>').addClass('tag-meta');
+            var ul = $('<ul>').addClass('list-meta');
             $('<li>').html( 'File count: '+this.fileCount ).appendTo(ul);
             $('<li>').html( 'Folder count: '+this.folderCount ).appendTo(ul);
             $('<li>').html( 'Type: '+this.currentNode.nodeType ).appendTo(ul);
@@ -156,28 +164,6 @@ function Navigator() {
             this.folderCount = 0; // children only
             this.fileCount = 0;
         },
-
-        /*
-        initialise: function () {
-            button.click(function () {
-                // I want "this.clearSelection();" to target the 
-                // "clearSelection" function below.
-                // Instead, it targets the button itself.
-                // How can i refer to it?
-                this.clearSelection();
-            });
-        },
-
-        clearSelection: function () {
-            this.populateList($("#stuff"), someData);
-            $("#adiv").empty();
-            console.log("clearSelection");
-        },
-
-        populateList: function (var1, var2) {
-            //do something to a list
-        },
-        */
 
         init: function () {
         }
