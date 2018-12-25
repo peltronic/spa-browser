@@ -1,4 +1,5 @@
 <?php
+require_once('../../libs/Utils.php'); // %FIXME
 require_once('../../libs/Browser.php'); // %FIXME
 
 $basepath = "/Users/petergorgone/workspace/study/MapLarge"; // %FIXME: take from constant file DRY
@@ -12,17 +13,16 @@ try {
     if ( empty($attrs['dst']) ) {
         throw new Exception('Destination path parameter required');
     }
-    $current = $basepath."/".$attrs['dst'];
-    if ( !is_dir($current) ) {
-        throw new Exception('Destination directory '.$current.' is not a valid path');
+    if ( !is_dir($attrs['dst']) ) {
+        throw new Exception('Destination directory '.$attrs['dst'].' is not a valid path');
     }
-    if ( !is_writable($current) ) {
-        throw new Exception('Destination directory '.$current.' is not writable');
+    if ( !is_writable($attrs['dst']) ) {
+        throw new Exception('Destination directory '.$attrs['dst'].' is not writable');
     }
     //print_r($attrs, $_FILES);
 
     // extra safety check
-    if ( !self::isWhitelisted($current) ) {
+    if ( !Utils::isWhitelisted($attrs['dst']) ) {
         throw new \Exception("Access denied");
     }
 
@@ -30,10 +30,10 @@ try {
         $errors[] = $_FILES['file']['error'];
         throw new Exception('File error');
     } else {
-        move_uploaded_file($_FILES['file']['tmp_name'], $current.'/'.$_FILES['file']['name']);
+        move_uploaded_file($_FILES['file']['tmp_name'], $attrs['dst'].'/'.$_FILES['file']['name']);
     }
     
-    $browser = new Browser($current);
+    $browser = new Browser($attrs['dst']);
     $response = ['nodes'=>$browser->getNodes(), 'attrs'=>$attrs];
     $code = 200;
 } catch (Exception $e) {
