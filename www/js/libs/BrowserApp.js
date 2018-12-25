@@ -13,37 +13,6 @@ function BrowserApp() {
             $('.parent').html( this.buildParentList() );
         },
     
-        // Handle app initialization on page load
-        doInit: function() {
-
-            var _this = this;
-    
-            // 'rootpath' is the top node, set via the UI and persistently stored in browser session. Navigation
-            //    above root node is not allowed.
-            // %FIXME: can they hack rootpath directly in session Storage??
-            var rootpath = window.sessionStorage.getItem("rootpath");
-            if ( null === rootpath ) {
-                return; // do nothing...user needs to set a rootpath via UI
-            }
-    
-            // Load page based on link in browser (deep-linking)...
-            var urlParams = new URLSearchParams(window.location.search);
-            var browserURL = urlParams.has('path') ? urlParams.get('path') : rootpath; // default to rootpath if not set or valid
-    
-            this.navigator.setRootpath(rootpath);
-            $('.root-path .show-val').html(this.navigator.rootpath); // update UI
-    
-            // Call index api to get list of child & parent nodes at url in browser or default
-            (function () {
-                return $.getJSON('/api/index.php', { src: browserURL } );
-            })()
-            .then( function(response) {
-                _this.navigator.update(response.nodes); // update navigator state
-                window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+browserURL ); // update browser URL (deep-linking)
-                _this.updateUIMisc();
-            });
-        },
-    
         doUpdate: function(selectedNode) {
 
             var _this = this;
@@ -154,88 +123,65 @@ function BrowserApp() {
             this.navigator = Navigator();
             this.searchtool = Searchtool();
             this.uploader = Uploader();
+            this.rootinit = Rootinit();
             var _this = this;
 
-            this.searchtool.init(this.navigator);
-            this.uploader.init(this.navigator, function() {
+            _this.searchtool.init(_this.navigator);
+            _this.uploader.init(_this.navigator, function() {
                 // render callback (so the uploaded file shows up in child list)
                 _this.doUpdate(_this.navigator.currentNode);
                 $('.children').html( _this.buildChildList() );
             });
-            this.doInit();
+            _this.rootinit.init(function(rootpath, nodes) {
+                // render callback after calling API to update rootpath and retrieving nodes
+                _this.navigator.setRootpath(rootpath); // update the rootpath 
+                _this.navigator.update(nodes); // update navigator *after* setting rootpath!
+                window.sessionStorage.setItem("rootpath", _this.navigator.rootpath);
+                window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+_this.navigator.rootpath ); // update browser URL to new rootpath
+                $('.root-path .show-val').html(_this.navigator.rootpath);
+                _this.updateUIMisc();
+            });
 
 
-
-    // =============================================================
-    // Update Tree Root
-    // =============================================================
-
-    $(document).on('submit', 'form.form-edit_root', function (e) {
-        e.preventDefault();
-        var thisForm = $(this);
-        var subcrate = thisForm.closest('.subcrate-root');
-        // %FIXME: DRY
-        $.ajax({
-            url: '/api/filetype.php',
-            type: 'POST',
-            dataType: 'json',
-            data    : thisForm.serialize(),
-            success: function (response) {
-                console.log('success');
-                (function () {
-                    return $.ajax({
-                        url: '/api/index.php',
-                        type: 'GET',
-                        data: {
-                            src: response.rootpath
-                        }
-                    })
-                })()
-                .then( function(response) {
-                    // Process response of 'index' API call 
-                    _this.navigator.setRootpath(response.attrs.src); // update the rootpath
-                    _this.navigator.update(response.nodes);
-                    window.sessionStorage.setItem("rootpath", _this.navigator.rootpath);
-                    window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+_this.navigator.rootpath ); // update browser URL %TODO: encasualte in function
-                    $('.root-path .show-val').html(_this.navigator.rootpath);
-                    _this.updateUIMisc();
-
-                    // hide the form
-                    subcrate.find('form').hide();
-                    subcrate.find('.root-path').show();
-                });
+            // Handle app initialization on page load
+    
+            // 'rootpath' is the top node, set via the UI and persistently stored in browser session. Navigation
+            //    above root node is not allowed.
+            // %FIXME: can they hack rootpath directly in session Storage??
+            var rootpath = window.sessionStorage.getItem("rootpath");
+            if ( null === rootpath ) {
+                return; // do nothing...user needs to set a rootpath via UI
             }
-        });
+    
+            // Load page based on link in browser (deep-linking)...
+            var urlParams = new URLSearchParams(window.location.search);
+            var browserURL = urlParams.has('path') ? urlParams.get('path') : rootpath; // default to rootpath if not set or valid
+    
+            _this.navigator.setRootpath(rootpath);
+            $('.root-path .show-val').html(_this.navigator.rootpath); // update UI
+    
+            // Call index api to get list of child & parent nodes at url in browser or default
+            (function () {
+                return $.getJSON('/api/index.php', { src: browserURL } );
+            })()
+            .then( function(response) {
+                _this.navigator.update(response.nodes); // update navigator state
+                window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+browserURL ); // update browser URL (deep-linking)
+                _this.updateUIMisc();
+            });
 
-    });
+            // --- Download (file only) ---
+        
+            $(document).on('click', '.list-meta .clickme-to_download', function(e) {
+                e.preventDefault();
+                var url = '/api/download.php';
+                url += '?src='+_this.navigator.currentNode.pathname;
+                url += '&filename='+_this.navigator.currentNode.filename;
+                window.location.href = url;
+                return false;
+            });
 
-    $(document).on('click', '.subcrate-root .root-path .clickme-to_edit', function(e) {
-        var context = $(this);
-        var subcrate = context.closest('.subcrate-root');
-        subcrate.find('.root-path').hide();
-        subcrate.find('form').show();
-    });
-
-    $(document).on('click', '.subcrate-root form.form-edit_root .clickme-to_cancel', function(e) {
-        var context = $(this);
-        var subcrate = context.closest('.subcrate-root');
-        subcrate.find('form').hide();
-        subcrate.find('.root-path').show();
-    });
-
-    // =============================================================
-    // Download (file only)
-    // =============================================================
-
-    $(document).on('click', '.list-meta .clickme-to_download', function(e) {
-        e.preventDefault();
-        var url = '/api/download.php';
-        url += '?src='+_this.navigator.currentNode.pathname;
-        url += '&filename='+_this.navigator.currentNode.filename;
-        window.location.href = url;
-        return false;
-    });
-        }
+        } // init()
 
     }
 }
