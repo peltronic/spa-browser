@@ -57,50 +57,61 @@ function Navigator() {
             //this.childNodes = []; // no, keep child nodes there, just don't show them
         },
         
-        buildParentList: function() {
-            var nObj, htmlStr, parsed;
-            var ul = $('<ul>');
+        buildParentList: function(clickHandler) {
+            var ul = $('<ul>').addClass('tag-parent');
+            var nObj, htmlStr, parsed, li, a;
         
             // Create & append a single <li> element representing parent node
             nObj = this.parentNode;
             //parsed = Utils.parseRelativePath(this.rootpath, nObj.pathname); // %FIXME: could be empty string case when root
             parsed = nObj.pathname;
+
+            var cbWrapper = function(nObj) { // helper method for looping so we bind to the correct nObj in the callback below
+                return function(e) {
+                    clickHandler(nObj);
+                };
+            };
+
+            li = $('<li>').attr('data-nodetype', nObj.nodeType);
+
+            //htmlStr = Utils.renderLink( parsed, parsed ) + ' ('+nObj.size+')';
+            htmlStr = parsed + ' ('+nObj.size+')';
             if ( this.currentNode.pathname === this.rootpath ) {
-                htmlStr = parsed + ' ('+nObj.size+')';
+                li.html(htmlStr);
             } else {
-                htmlStr = Utils.renderLink( parsed, parsed ) + ' ('+nObj.size+')';
+                a = $('<a>').addClass('tag-parent').html( htmlStr ).appendTo(li);
+                li.on('click', 'a.tag-parent', cbWrapper(nObj));
             }
-            $('<li>').attr('data-nodetype', nObj.nodeType).html(htmlStr)
-                    .attr('data-guid', 'parent') // poor-man's hash to locate from associated DOM (%FIXME: explain better)
-                    .appendTo(ul);
+
+            li.appendTo(ul);
+
             return ul;
         },
         
         // Creates a <ul> list and adds nodes as <li> elements to it
+        //  ~ clickHanlder is a callback that takes care of app-level DOM manipulation
         buildChildList: function(clickHandler) {
-            var i, nObj, htmlStr, parsed;
-            var ul = $('<ul>');
-            var li;
+            var ul = $('<ul>').addClass('tag-children');
+            var i, nObj, htmlStr, parsed, li, a;
             var _this = this;
         
             if ('folder' === this.currentNode.nodeType) {
                 // Create & append one <li> element per child node
                 for (i = 0; i < this.childNodes.length; i++) {
                     nObj = this.childNodes[i];
-                    var cbWrapper = function(nObj) { // helper method so we bind to the correct nObj in the callback below
+                    var cbWrapper = function(nObj) { // helper method for looping so we bind to the correct nObj in the callback below
                         return function(e) {
                             clickHandler(nObj);
                         };
                     };
                     //parsed = Utils.parseRelativePath(this.rootpath, nObj.pathname);
                     parsed = nObj.pathname;
-                    li = $('<li>').attr('data-nodetype', nObj.nodeType)
-                                  .attr('data-guid', i) // poor-man's hash to locate from associated DOM (%FIXME: explain better)
-                                  .html(htmlStr);
-                    $('<a>').bind('click', cbWrapper(nObj))
-                            .addClass('clickme_to_navigate')
-                            .html( parsed+' ('+nObj.size+')' )
-                            .appendTo(li);
+
+                    li = $('<li>').attr('data-nodetype', nObj.nodeType);
+
+                    htmlStr = parsed + ' ('+nObj.size+')';
+                    a = $('<a>').addClass('tag-child').html( htmlStr ).appendTo(li);
+                    li.on('click', 'a.tag-child', cbWrapper(nObj));
                     li.appendTo(ul);
                 }
             } // otherwise, files have no children...

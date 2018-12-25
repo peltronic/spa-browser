@@ -40,7 +40,7 @@ var Utils = {
             parsed = nObj.pathname;
             htmlStr = this.renderLink( parsed, parsed ) + ' ('+nObj.size+')';
             $('<li>').attr('data-nodetype', nObj.nodeType).html(htmlStr)
-                     .attr('data-guid', i) // poor-man's hash to locate from associated DOM
+                     //.attr('data-guid', i) // poor-man's hash to locate from associated DOM
                      .appendTo(ul);
         }
         return ul;

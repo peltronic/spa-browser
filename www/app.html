@@ -170,7 +170,7 @@ $( document ).ready(function() {
             $('#val-current').html( navigator.renderCurrent() );
             $('.meta').html( navigator.buildMeta() );
             $('.children').html( navigator.buildChildList(doUpdate) );
-            $('.parent').html( navigator.buildParentList() );
+            $('.parent').html( navigator.buildParentList(doUpdate) );
         });
     }
     
@@ -184,12 +184,7 @@ $( document ).ready(function() {
             $('form#form-upload_file input[name=dst]').val(navigator.currentNode.pathname );
             $('.meta').html( navigator.buildMeta() );
             $('.children').html( navigator.buildChildList(doUpdate) );
-            $('.parent').html( navigator.buildParentList() );
-
-            // %TODO; how do we know what node in the Navigator struct we clicked on from the DOM info??
-            // %TODO; should be renderAsParent but pass current? how to do this?
-            // => actually need to call update here, w/o going to api to get the new node list
-            // %TODO: make this a link (add as method argument, and combine render...() methods into one
+            $('.parent').html( navigator.buildParentList(doUpdate) );
         } else {
             // navigating into a folder
             // %FIXME DRY
@@ -212,12 +207,13 @@ $( document ).ready(function() {
                 $('#val-current').html( navigator.renderCurrent() );
                 $('.meta').html( navigator.buildMeta() );
                 $('.children').html( navigator.buildChildList(doUpdate) );
-                $('.parent').html( navigator.buildParentList() );
+                $('.parent').html( navigator.buildParentList(doUpdate) );
             });
         }
     }
 
     // $%FIXME
+    /*
     $(document).on('click', '.crate-parent a.clickme_to_navigate', function(e) {
         e.preventDefault();
         var context = $(this).closest('li');
@@ -226,7 +222,6 @@ $( document ).ready(function() {
         return false;
     });
 
-    /*
     $(document).on('click', '.children a.clickme_to_navigate', function(e) {
         e.preventDefault();
         var context = $(this).closest('li');
@@ -237,6 +232,7 @@ $( document ).ready(function() {
     });
     */
 
+    /*
     $(document).on('click', '.search-results a.clickme_to_navigate', function(e) {
         e.preventDefault();
         var context = $(this).closest('li');
@@ -244,6 +240,7 @@ $( document ).ready(function() {
         doUpdate(selectedNode);
         return false;
     });
+    */
 
     // File upload
     $(document).on('submit', 'form#form-upload_file', function (e) {
@@ -266,7 +263,7 @@ $( document ).ready(function() {
             success: function (response) {
                 doUpdate(navigator.currentNode);
                 $('.children').html( navigator.buildChildList(doUpdate) );
-                //$('.parent').html( navigator.buildParentList() );
+                //$('.parent').html( navigator.buildParentList(doUpdate) );
             }
         });
 
@@ -320,7 +317,7 @@ $( document ).ready(function() {
                     $('.root-path .show-val').html(navigator.rootpath);
                     $('.meta').html( navigator.buildMeta() );
                     $('.children').html( navigator.buildChildList(doUpdate) );
-                    $('.parent').html( navigator.buildParentList() );
+                    $('.parent').html( navigator.buildParentList(doUpdate) );
 
                     // hide the form
                     subcrate.find('form').hide();
