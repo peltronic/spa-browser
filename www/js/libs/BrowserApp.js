@@ -5,14 +5,6 @@ function BrowserApp() {
         searchtool: null,
         navigator: null,
 
-        // helper function for common code
-        updateUIMisc: function() {
-            $('#val-current').html( this.navigator.renderCurrent() );
-            $('.meta').html( this.buildMeta() );
-            $('.children').html( this.buildChildList() );
-            $('.parent').html( this.buildParentList() );
-        },
-    
         doUpdate: function(selectedNode) {
 
             var _this = this;
@@ -20,7 +12,7 @@ function BrowserApp() {
             if ( 'file' == selectedNode.nodeType ) {
                 // navigating into file
                 this.navigator.pushFile(selectedNode);
-                this.updateUIMisc();
+                this.renderMiscUI();
             } else {
                 // navigating into a folder
                 (function () {
@@ -31,7 +23,7 @@ function BrowserApp() {
                     // Process response of 'index' API call 
                     _this.navigator.update(response.nodes); 
                     window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+_this.navigator.currentNode.pathname ); // update browser URL %TODO: encasualte in function
-                    _this.updateUIMisc();
+                    _this.renderMiscUI();
                 });
             }
         },
@@ -55,7 +47,7 @@ function BrowserApp() {
             li = $('<li>').attr('data-nodetype', nObj.nodeType);
 
             htmlStr = parsed + ' ('+nObj.size+')';
-            if ( this.navigator.currentNode.pathname === this.rootpath ) {
+            if ( this.navigator.currentNode.pathname === this.navigator.rootpath ) {
                 li.html(htmlStr);
             } else {
                 a = $('<a>').addClass('tag-parent').html( htmlStr ).appendTo(li);
@@ -97,6 +89,34 @@ function BrowserApp() {
 
             return ul;
         },
+
+        buildSearchList: function(nodes) {
+            var div = $('<div>');
+            var ul = $('<ul>').addClass('list-search');;
+            var i, nObj, htmlStr, parsed;
+            var _this = this;
+    
+            // Create & append one <li> element per child node
+            for (i = 0; i < nodes.length; i++) {
+                nObj = nodes[i];
+    
+                var cbWrapper = function(nObj) { // helper method for looping so we bind to the correct nObj in the callback below
+                    return function(e) {
+                        _this.doUpdate(nObj);
+                    };
+                };
+                //parsed = Utils.parseRelativePath(this.rootpath, nObj.pathname);
+                parsed = nObj.pathname;
+    
+                li = $('<li>').attr('data-nodetype', nObj.nodeType);
+    
+                htmlStr = parsed + ' ('+nObj.size+')';
+                a = $('<a>').addClass('tag-search').html( htmlStr ).appendTo(li);
+                li.on('click', 'a.tag-search', cbWrapper(nObj));
+                li.appendTo(ul);
+            }
+            return $('<div>').append('<h4>SearchResults</h4>').append(ul);
+        },
         
         
         buildMeta: function() {
@@ -118,20 +138,36 @@ function BrowserApp() {
             return ul;
         },
 
+        // helper function for common code
+        renderMiscUI: function() {
+            $('#val-current').html( this.navigator.renderCurrent() );
+            $('.meta').html( this.buildMeta() );
+            $('.children').html( this.buildChildList() );
+            $('.parent').html( this.buildParentList() );
+        },
 
         init: function () {
+
+            var urlParams, browserURL, rootpath;
             this.navigator = Navigator();
             this.searchtool = Searchtool();
             this.uploader = Uploader();
             this.rootinit = Rootinit();
             var _this = this;
 
-            _this.searchtool.init(_this.navigator);
+            // --- Init libs with any callbacks required ---
+
+            _this.searchtool.init(_this.navigator, function(nodes) {
+                 var searchResults = Utils.createNodeArray(nodes);
+                $('.search-results').html( _this.buildSearchList(searchResults) );
+            });
+
             _this.uploader.init(_this.navigator, function() {
                 // render callback (so the uploaded file shows up in child list)
                 _this.doUpdate(_this.navigator.currentNode);
                 $('.children').html( _this.buildChildList() );
             });
+
             _this.rootinit.init(function(rootpath, nodes) {
                 // render callback after calling API to update rootpath and retrieving nodes
                 _this.navigator.setRootpath(rootpath); // update the rootpath 
@@ -139,35 +175,40 @@ function BrowserApp() {
                 window.sessionStorage.setItem("rootpath", _this.navigator.rootpath);
                 window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+_this.navigator.rootpath ); // update browser URL to new rootpath
                 $('.root-path .show-val').html(_this.navigator.rootpath);
-                _this.updateUIMisc();
+                _this.renderMiscUI();
             });
 
-
-            // Handle app initialization on page load
+            // --- Handle app initialization on page load ---
     
             // 'rootpath' is the top node, set via the UI and persistently stored in browser session. Navigation
             //    above root node is not allowed.
             // %FIXME: can they hack rootpath directly in session Storage??
-            var rootpath = window.sessionStorage.getItem("rootpath");
-            if ( null === rootpath ) {
-                return; // do nothing...user needs to set a rootpath via UI
+            rootpath = window.sessionStorage.getItem("rootpath");
+            if ( null !== rootpath ) {
+                // Only load page if rootpath is set, otherwise user needs to set a rootpath via UI
+                // Load page based on link in browser (deep-linking)...
+                urlParams = new URLSearchParams(window.location.search);
+                browserURL = urlParams.has('path') ? urlParams.get('path') : rootpath; // default to rootpath if not set or valid
+        
+                _this.navigator.setRootpath(rootpath);
+                $('.root-path .show-val').html(_this.navigator.rootpath); // update UI
+        
+                // Call index api to get list of child & parent nodes at url in browser or default
+                (function () {
+                    return $.getJSON('/api/index.php', { src: browserURL } );
+                })()
+                .then( function(response) {
+                    _this.navigator.update(response.nodes); // update navigator state
+                    window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+browserURL ); // update browser URL (deep-linking)
+                    _this.renderMiscUI();
+                });
             }
     
-            // Load page based on link in browser (deep-linking)...
-            var urlParams = new URLSearchParams(window.location.search);
-            var browserURL = urlParams.has('path') ? urlParams.get('path') : rootpath; // default to rootpath if not set or valid
-    
-            _this.navigator.setRootpath(rootpath);
-            $('.root-path .show-val').html(_this.navigator.rootpath); // update UI
-    
-            // Call index api to get list of child & parent nodes at url in browser or default
-            (function () {
-                return $.getJSON('/api/index.php', { src: browserURL } );
-            })()
-            .then( function(response) {
-                _this.navigator.update(response.nodes); // update navigator state
-                window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+browserURL ); // update browser URL (deep-linking)
-                _this.updateUIMisc();
+            // Clear search form when we click on a link in search results
+            $(document).on('click', 'a.tag-search', function(e) {
+                var context = $(this);
+                _this.searchtool.clearSearch( context.closest('.crate-navigation') );
+                $('.search-results').html(''); // do after clearSearch()
             });
 
             // --- Download (file only) ---
