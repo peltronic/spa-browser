@@ -1,5 +1,5 @@
 <?php
-require_once('../../libs/Browser.php'); // %FIXME
+require_once('../../libs/Utils.php'); // %FIXME
 // returns file, folder, or invalid (doesn't exist, or not writable, readable, etc)
 
 $attrs = $_POST; // query params
@@ -12,7 +12,7 @@ if ( empty($attrs['rootpath']) ) {
     $errors[] = "Missing required parameter 'rootpath'";
 } else {
     $attrs['rootpath'] = trim($attrs['rootpath']);
-    $e = Browser::checkPath($attrs['rootpath'],'folder');
+    $e = Utils::checkPath($attrs['rootpath'],'folder');
     if ( count($e) ) {
         $errors = array_merge($errors,$e);
     } else if ( !is_writable($attrs['rootpath']) ) {

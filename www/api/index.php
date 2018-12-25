@@ -1,5 +1,9 @@
 <?php
+require_once('../../libs/Utils.php'); // %FIXME
 require_once('../../libs/Browser.php'); // %FIXME
+
+// NOTE: can only browse to folders, not files. Ie the 'src' parameter
+//   can only be a folder path not a file path
 
 $attrs = $_GET; // eg: GET /index?src=root/foo/bar
 $nodes = [];
@@ -8,7 +12,7 @@ $errors = [];
 if ( empty($attrs['src']) ) {
     $errors[] = "Missing required parameter 'src'";
 } else {
-    $e = Browser::checkPath($attrs['src']);
+    $e = Utils::checkPath($attrs['src']);
     if ( count($e) ) {
         $errors = array_merge($errors,$e);
     } else {
@@ -18,7 +22,7 @@ if ( empty($attrs['src']) ) {
 }
 
 // extra safety check
-if ( !Browser::isWhitelisted($attrs['src']) ) {
+if ( !Utils::isWhitelisted($attrs['src']) ) {
     throw new \Exception("Access denied");
 }
 
