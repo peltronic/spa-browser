@@ -2,6 +2,8 @@ function Searchtool() {
 
     return {
 
+        navigator: null,
+
         buildList: function(nodes, clickHandler) {
             var div = $('<div>');
             var ul = $('<ul>').addClass('list-search');;
@@ -29,9 +31,49 @@ function Searchtool() {
             return $('<div>').append('<h4>SearchResults</h4>').append(ul);
         },
 
+        clearSearch: function(navigationCrate) {
+            var thisForm = navigationCrate.find('form.form-search');
+            thisForm.hide().trigger('reset');
+            $('.search-results').html('');
+            navigationCrate.find('.children').show();
+            navigationCrate.find('.clickme-to_search').show();
+        },
 
-        init: function () {
-        }
+        init: function (navigator) {
+
+            var _this = this;
+            _this.navigator = navigator;
+
+            $(document).on('submit', 'form.form-search', function (e) {
+                e.preventDefault();
+                var thisForm = $(this);
+                var payload = {
+                    q: thisForm.find('input[name="q"]').val(),
+                    src: _this.navigator.currentNode.pathname
+                };
+                $.getJSON('/api/search.php', payload, function(response) {
+                    var searchResults = Utils.createNodeArray(response.nodes);
+                    $('.search-results').html( _this.buildList(searchResults, function(nObj) { 
+                        var navigationCrate = thisForm.closest('.crate-navigation');
+                        _this.clearSearch(navigationCrate); // Clear search form, etc before doing update callback
+                        _this.doUpdate(nObj) 
+                    }) );
+                });
+            });
+        
+            $(document).on('click', '.clickme-to_search', function(e) {
+                var navigationCrate = $(this).closest('.crate-navigation');
+                navigationCrate.find('.children').hide();
+                navigationCrate.find('.clickme-to_search').hide();
+                navigationCrate.find('form.form-search').show();
+            });
+        
+            $(document).on('click', 'form.form-search .clickme-to_cancel', function(e) {
+                var navigationCrate = $(this).closest('.crate-navigation');
+                _this.clearSearch(navigationCrate);
+            });
+
+        } // init()
 
     }
 }
