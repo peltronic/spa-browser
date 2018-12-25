@@ -12,6 +12,7 @@ function Navigator() {
     this.childNodes = [];
     this.folderCount = 0; // children only
     this.fileCount = 0;
+    this.selectedNode = null; // for move, copy, delete ops
 
     /*
     if ( 'undefined'!==typeof(nodes) ) {
@@ -114,9 +115,21 @@ Navigator.prototype.buildChildList = function() {
 
 
 Navigator.prototype.buildMeta = function() {
-    var ul = $('<ul>');
+    var htmlStr = '';
+    var ul = $('<ul>').addClass('tag-meta');
     $('<li>').html( 'File count: '+this.fileCount ).appendTo(ul);
     $('<li>').html( 'Folder count: '+this.folderCount ).appendTo(ul);
+    $('<li>').html( 'Type: '+this.currentNode.nodeType ).appendTo(ul);
+    if ( 'file' === this.currentNode.nodeType ) {
+        htmlStr = '<a class="clickme-to_move">Move</a>' ;
+        htmlStr += ' | <a class="clickme-to_copy">Copy</a>' ;
+        htmlStr += ' | <a class="clickme-to_delete">Delete</a>' ;
+        htmlStr += ' | <a class="clickme-to_download">Download</a>' ;
+        $('<li>').html( htmlStr ).appendTo(ul);
+    } else {
+        htmlStr = '<a class="clickme-to_upload">Upload</a>' ;
+        $('<li>').html( htmlStr ).appendTo(ul);
+    }
     return ul;
 }
 
@@ -137,5 +150,3 @@ Navigator.prototype.doReset = function() {
     this.folderCount = 0; // children only
     this.fileCount = 0;
 }
-
-

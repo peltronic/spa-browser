@@ -2,6 +2,7 @@
 
 class Utils {
 
+
     public static function checkPath($path,$requiredType=null)
     {
         $errors = [];
@@ -25,8 +26,9 @@ class Utils {
     //   ~ Adopted from https://stackoverflow.com/questions/1628699/test-if-a-directory-is-a-sub-directory-of-another-folder
     public static function isWhitelisted($thisPath=null)
     {
-        $parentFolder = '/Users/petergorgone/workspace/study/MapLarge';
-        return self::isSubfolder($parentFolder, $thisPath);
+        include('../../configs.php');
+        $wlFolder = $WHITELISTED_FOLDERS[0];
+        return self::isSubfolder($wlFolder, $thisPath);
     }
 
     public static function isSubfolder($parentFolder, $thisPath)

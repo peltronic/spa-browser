@@ -59,36 +59,36 @@
 
                                 <div class="search-results"></div> <!-- list of nodes -->
 
-                                <div>
-                                    <div class="root-path">
-                                        Root Folder: <span class="show-val"></span> | <a href="#" class="clickme-to_edit">Edit</a>
-                                    </div>
-                                    <form class="form-edit_root">
-                                        <label class="label">Set root path</label>
-                                        <div class="field is-grouped">
-                                            <p class="control is-expanded">
-                                                <input class="input" type="text" name="rootpath" placeholder="Enter path...">
-                                            </p>
-                                            <p class="control">
-                                                <button type="submit" class="button is-info">Save</button>
-                                            </p>
-                                        </div>
-                                    </form> 
-                                </div>
 
                             </div>
 
                         </div>
 
                         <div class="crate-info column">
+
+                            <h5 class="subtitle is-5">Root Folder</h5>
+                            <div class="subcrate-root">
+                                <div class="root-path">
+                                    <span class="show-val"></span> | <a href="#" class="clickme-to_edit">Edit</a>
+                                </div>
+                                <form class="form-edit_root tag-hidden">
+                                    <label class="label">Set root path</label>
+                                    <div class="field is-grouped">
+                                        <p class="control is-expanded">
+                                            <input class="input" type="text" name="rootpath" placeholder="Enter path...">
+                                        </p>
+                                        <p class="control">
+                                            <button type="submit" class="button is-info">Save</button>
+                                            <button type="button" class="button is-light clickme-to_cancel">Cancel</button>
+                                        </p>
+                                    </div>
+                                </form> 
+                            </div>
+
+                            <hr />
+
                             <h5 class="subtitle is-5">Data and Ops</h5>
                             <div class="meta"></div>
-                            <hr />
-                            <div class="info">
-                                <ul>
-                                    <li>Type: <span>TBD</span></li>
-                                </ul>
-                            </div>
                             <hr />
                             <div>
                                 <span>Upload</span>
@@ -125,25 +125,19 @@
 -->
 <script src="/js/libs/utils.js"></script>
 <script src="/js/libs/Node.js"></script>
+<!--
 <script src="/js/libs/Navigator.js"></script>
+-->
+<script src="/js/libs/Nav2.js"></script>
 
 <script type="text/javascript">
 
 $( document ).ready(function() {
 
-
-/* TEST CODE
-    var fn = new FileNode(200, '/foo/bar/hello.txt', 'tmp');
-    var dn = new FolderNode(10, '/foo/', 'tmp');
-
-    console.log('here');
-*/
-    // ----
-
     // Global 'state'...
-    var appConfigs = [];
     var searchResults = [];
-    var navigator = new Navigator();
+    //var navigator = new Navigator();
+    var navigator = Navigator();
 
     function doInit() {
 
@@ -175,7 +169,7 @@ $( document ).ready(function() {
             window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+browserURL ); // update browser URL %TODO: encasualte in function
             $('#val-current').html( navigator.renderCurrent() );
             $('.meta').html( navigator.buildMeta() );
-            $('.children').html( navigator.buildChildList() );
+            $('.children').html( navigator.buildChildList(doUpdate) );
             $('.parent').html( navigator.buildParentList() );
         });
     }
@@ -189,7 +183,7 @@ $( document ).ready(function() {
             $('#val-current').html( navigator.renderCurrent() );
             $('form#form-upload_file input[name=dst]').val(navigator.currentNode.pathname );
             $('.meta').html( navigator.buildMeta() );
-            $('.children').html( navigator.buildChildList() );
+            $('.children').html( navigator.buildChildList(doUpdate) );
             $('.parent').html( navigator.buildParentList() );
 
             // %TODO; how do we know what node in the Navigator struct we clicked on from the DOM info??
@@ -217,7 +211,7 @@ $( document ).ready(function() {
                 window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+navigator.currentNode.pathname ); // update browser URL %TODO: encasualte in function
                 $('#val-current').html( navigator.renderCurrent() );
                 $('.meta').html( navigator.buildMeta() );
-                $('.children').html( navigator.buildChildList() );
+                $('.children').html( navigator.buildChildList(doUpdate) );
                 $('.parent').html( navigator.buildParentList() );
             });
         }
@@ -232,6 +226,7 @@ $( document ).ready(function() {
         return false;
     });
 
+    /*
     $(document).on('click', '.children a.clickme_to_navigate', function(e) {
         e.preventDefault();
         var context = $(this).closest('li');
@@ -240,6 +235,7 @@ $( document ).ready(function() {
         doUpdate(selectedNode);
         return false;
     });
+    */
 
     $(document).on('click', '.search-results a.clickme_to_navigate', function(e) {
         e.preventDefault();
@@ -269,7 +265,7 @@ $( document ).ready(function() {
             processData: false,
             success: function (response) {
                 doUpdate(navigator.currentNode);
-                $('.children').html( navigator.buildChildList() );
+                $('.children').html( navigator.buildChildList(doUpdate) );
                 //$('.parent').html( navigator.buildParentList() );
             }
         });
@@ -289,9 +285,14 @@ $( document ).ready(function() {
         });
     });
 
+    // =============================================================
+    // Update Tree Root
+    // =============================================================
+
     $(document).on('submit', 'form.form-edit_root', function (e) {
         e.preventDefault();
         var thisForm = $(this);
+        var subcrate = thisForm.closest('.subcrate-root');
         // %FIXME: DRY
         $.ajax({
             url: '/api/filetype.php',
@@ -318,12 +319,40 @@ $( document ).ready(function() {
                     $('#val-current').html( navigator.renderCurrent() );
                     $('.root-path .show-val').html(navigator.rootpath);
                     $('.meta').html( navigator.buildMeta() );
-                    $('.children').html( navigator.buildChildList() );
+                    $('.children').html( navigator.buildChildList(doUpdate) );
                     $('.parent').html( navigator.buildParentList() );
+
+                    // hide the form
+                    subcrate.find('form').hide();
+                    subcrate.find('.root-path').show();
                 });
             }
         });
 
+    });
+
+    $(document).on('click', '.subcrate-root .root-path .clickme-to_edit', function(e) {
+        var context = $(this);
+        var subcrate = context.closest('.subcrate-root');
+        subcrate.find('.root-path').hide();
+        subcrate.find('form').show();
+    });
+
+    $(document).on('click', '.subcrate-root form.form-edit_root .clickme-to_cancel', function(e) {
+        var context = $(this);
+        var subcrate = context.closest('.subcrate-root');
+        subcrate.find('form').hide();
+        subcrate.find('.root-path').show();
+    });
+
+
+    $(document).on('click', '.tag-meta .clickme-to_download', function(e) {
+        e.preventDefault();
+        var url = '/api/download.php';
+        url += '?src='+navigator.currentNode.pathname;
+        url += '&filename='+navigator.currentNode.filename;
+        window.location.href = url;
+        return false;
     });
 
     doInit();

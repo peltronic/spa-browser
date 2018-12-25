@@ -4,6 +4,8 @@ http://www.dev-maplarge.com/app.html
 http://www.dev-maplarge.com/api/index.php?src=/treeroot/foo
 
 %TODO:
+[ ] problem: links in library have handlers in 'main'
+[ ] folder green if writable, disable upload and move if not writable (?)
 [ ] multiple browser testing
     ~ https://developer.microsoft.com/en-us/microsoft-edge/
 [ ] send direct api links

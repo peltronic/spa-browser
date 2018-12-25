@@ -1,6 +1,6 @@
 
 .widget {
-    padding: 20px;
+    padding: 1.0rem 1.5rem 2.5rem 1.5rem;
     margin: 25px 0;
     border: solid 3px #c5c5c5;
 }
@@ -12,4 +12,25 @@
 }
 .crate-parent > * {
     display: inline-block;
+}
+.crate-navigation {
+    padding-right: 0.8rem;
+}
+.crate-info {
+    border-left: solid 2px #c5c5c5;
+    padding-left: 0.8rem;
+}
+
+.tag-hidden {
+    display: none;
+}
+
+h2.subtitle:not(:last-child) {
+    margin-bottom: 0.9rem;
+}
+.subtitle:not(:last-child) {
+    margin-bottom: 0.5rem;
+}
+.subcrate-root {
+    margin-bottom: 1.2rem;
 }
