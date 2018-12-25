@@ -1,5 +1,8 @@
+// Node is an inheritance hierarchy representing filesystem entitites. There are 2 types, each based on a 'base class': 
+//  ~ a file *is a* node
+//  ~ a folder *is a* node
 
-// --- Node ---
+// --- Node (Base Object) ---
 
 function Node(nodeType, size, pathname, filename) {
    this.nodeType = nodeType;
@@ -11,8 +14,6 @@ function Node(nodeType, size, pathname, filename) {
 Node.prototype.getNodeType = function() {
     return this.nodeType;
 }
-
-
 
 // --- FileNode ---
 

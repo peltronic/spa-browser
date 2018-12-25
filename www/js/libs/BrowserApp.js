@@ -1,3 +1,5 @@
+"use strict";
+
 function BrowserApp() {
 
     return {
@@ -22,7 +24,7 @@ function BrowserApp() {
                 .then( function(response) {
                     // Process response of 'index' API call 
                     _this.navigator.update(response.nodes); 
-                    window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+_this.navigator.currentNode.pathname ); // update browser URL %TODO: encasualte in function
+                    window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+_this.navigator.currentNode.pathname ); // update browser URL
                     _this.renderMiscUI();
                 });
             }
@@ -93,7 +95,7 @@ function BrowserApp() {
         buildSearchList: function(nodes) {
             var div = $('<div>');
             var ul = $('<ul>').addClass('list-search');;
-            var i, nObj, htmlStr, parsed;
+            var i, nObj, htmlStr, parsed, li, a;
             var _this = this;
     
             // Create & append one <li> element per child node
@@ -140,10 +142,19 @@ function BrowserApp() {
 
         // helper function for common code
         renderMiscUI: function() {
-            $('#val-current').html( this.navigator.renderCurrent() );
+            $('#val-current').html( this.renderCurrent() );
             $('.meta').html( this.buildMeta() );
             $('.children').html( this.buildChildList() );
             $('.parent').html( this.buildParentList() );
+        },
+        
+        // Render node as the current node (selected folder or file)
+        // %TODO: what to do in file case? or , this can only be folder, have other mechanism
+        // for highlighting a file (?)
+        renderCurrent: function() {
+            //var parsed = Utils.parseRelativePath(this.rootpath, this.currentNode.pathname);
+            var parsed = this.navigator.currentNode.pathname;
+            return parsed + ' ('+this.navigator.currentNode.size+')'; // %FIXME: DRY
         },
 
         init: function () {
@@ -204,15 +215,9 @@ function BrowserApp() {
                 });
             }
     
-            // Clear search form when we click on a link in search results
-            $(document).on('click', 'a.tag-search', function(e) {
-                var context = $(this);
-                _this.searchtool.clearSearch( context.closest('.crate-navigation') );
-                $('.search-results').html(''); // do after clearSearch()
-            });
-
-            // --- Download (file only) ---
+            // --- Misc. event handlers ---
         
+            // Download (file only) 
             $(document).on('click', '.list-meta .clickme-to_download', function(e) {
                 e.preventDefault();
                 var url = '/api/download.php';
@@ -221,6 +226,14 @@ function BrowserApp() {
                 window.location.href = url;
                 return false;
             });
+
+            // Clear search form when we click on a link in search results
+            $(document).on('click', 'a.tag-search', function(e) {
+                var context = $(this);
+                _this.searchtool.clearSearch( context.closest('.crate-navigation') );
+                $('.search-results').html(''); // do after clearSearch()
+            });
+
 
         } // init()
 

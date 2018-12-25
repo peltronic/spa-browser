@@ -29,16 +29,6 @@ var Utils = {
         return nodesOut;
     },
 
-
-    /*
-    renderLink: function(title, path) {
-        // Create markup for a html <a> tag
-        var href = Utils.getAppURL()+'?path='+path;
-        return '<a href="'+href+'" class="clickme_to_navigate" data-OFF_subpath="'+path+'">' + title + '</a>';
-    },
-    */
-
-    
     init: function() {
     }
 }

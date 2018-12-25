@@ -1,4 +1,9 @@
+"use strict";
+
 function Navigator() {
+
+    // The Navigator object holds an array of the child nodes, plus the parent node, based on the
+    //   current node. It also tracks to roothpath and misc. associated data
 
     return {
 
@@ -8,7 +13,7 @@ function Navigator() {
         childNodes: [],
         folderCount: 0, // children only
         fileCount: 0,
-        selectedNode: null, // for move, copy, delete ops
+        selectedNode: null, // for move, copy, delete ops %TODO
 
         setRootpath: function(rootpath) {
             this.rootpath = rootpath;
@@ -49,29 +54,15 @@ function Navigator() {
         },
         
         // Push down to a child node which is a file and refresh
-        // %FIXME: how is this going to work clicking on a file in search results?
+        // %TODO: how is this going to work clicking on a file in search results?
         pushFile: function(fileNode) {
             this.parentNode = this.currentNode;
             this.currentNode = fileNode;
-            //this.childNodes = []; // no, keep child nodes there, just don't show them
         },
         
         // Return from file child node to its folder parent
         popFile: function() {
             this.currentNode = this.parentNode;
-            //this.parentNode = ; // ???
-            //this.childNodes = []; // no, keep child nodes there, just don't show them
-        },
-        
-        
-        
-        // Render node as the current node (selected folder or file)
-        // %TODO: what to do in file case? or , this can only be folder, have other mechanism
-        // for highlighting a file (?)
-        renderCurrent: function() {
-            //var parsed = Utils.parseRelativePath(this.rootpath, this.currentNode.pathname);
-            var parsed = this.currentNode.pathname;
-            return parsed + ' ('+this.currentNode.size+')'; // %FIXME: DRY
         },
         
         doReset: function() {
