@@ -130,18 +130,17 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="/js/libs/utils.js"></script>
 <script src="/js/libs/Node.js"></script>
-<!--
 <script src="/js/libs/Navigator.js"></script>
+<script src="/js/libs/Searchtool.js"></script>
+<!--
+<script src="/js/libs/Nav3.js"></script>
 -->
-<script src="/js/libs/Nav2.js"></script>
 
 <script type="text/javascript">
 
 $( document ).ready(function() {
 
-    // Global 'state'...
-    //var searchResults = [];
-    //var navigator = new Navigator();
+    var searchtool = new Searchtool();
     var navigator = Navigator();
 
     function doInit() {
@@ -226,7 +225,7 @@ $( document ).ready(function() {
         };
         $.getJSON('/api/search.php', payload, function(response) {
             var searchResults = Utils.createNodeArray(response.nodes);
-            $('.search-results').html( Utils.buildSearchList(searchResults, function(nObj) { 
+            $('.search-results').html( searchtool.buildList(searchResults, function(nObj) { 
                 var navigationCrate = thisForm.closest('.crate-navigation');
                 clearSearch(navigationCrate); // Clear search form, etc before doing update callback
                 doUpdate(nObj) 
