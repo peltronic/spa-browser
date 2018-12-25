@@ -23,22 +23,63 @@
                     <h2>Widget 1</h2>
                 </section>
         
+                <!-- ++++++++++++++++++++++++++++++++++++++++++++ -->
+
                 <section id="widget-2" class="widget">
 
                     <h2 class="subtitle is-4">Widget 2</h2>
 
                     <article class="columns">
+
                         <div class="crate-navigation column">
+
                             <h5 class="subtitle is-5">Navigation</h6>
+
                             <div class="content">
+
                                 <div class="crate-parent">
                                     <p>Parent:</p>
                                     <span class="parent"></span>
                                 </div>
+
                                 <p class="">Current: <span id="val-current"></span></p>
+
+                                <form class="form-search">
+                                    <div class="field is-grouped">
+                                        <p class="control is-expanded">
+                                            <input class="input" type="text" name="q" placeholder="Find a file...">
+                                        </p>
+                                        <p class="control">
+                                            <button type="submit" class="button is-info">Search</button>
+                                        </p>
+                                    </div>
+                                </form> 
+
                                 <div class="children"></div> <!-- list of child nodes -->
+
+                                <div class="search-results"></div> <!-- list of nodes -->
+
+                                <div>
+                                    <div class="root-path">
+                                        Root Folder: <span class="show-val"></span> | <a href="#" class="clickme-to_edit">Edit</a>
+                                    </div>
+                                    <form class="form-edit_root">
+                                        <label class="label">Set root path</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input class="input" type="text" name="rootpath" placeholder="Enter path...">
+                                            </p>
+                                            <p class="control">
+                                                <button type="submit" class="button is-info">Save</button>
+                                            </p>
+                                        </div>
+                                    </form> 
+                                </div>
+
                             </div>
+
                         </div>
+
                         <div class="crate-info column">
                             <h5 class="subtitle is-5">Data and Ops</h5>
                             <div class="meta"></div>
@@ -63,21 +104,9 @@
                         </div>
                     </article>
 
-                    <div class="root-folder">
-                        <div class="tag-show">
-                        Root Folder: <span class="show-val"></span> | <a href="#" class="clickme-to_edit">Edit</a>
-                        </div>
-                        <div class="tag-edit">
-                            <form class="form-edit_root">
-                                <label>
-                                    <input type="text" name="rootpath">
-                                </label>
-                                <input type="submit" value="Save">
-                            </form> 
-                        </div>
-                    </div>
-
                 </section>
+
+                <!-- ++++++++++++++++++++++++++++++++++++++++++++ -->
 
                 <section id="widget-3" class="widget">
                     <h2>Widget 3</h2>
@@ -113,7 +142,8 @@ $( document ).ready(function() {
     // ----
 
     // Global 'state'...
-    var appConfigs = Array;
+    var appConfigs = [];
+    var searchResults = [];
     var navigator = new Navigator();
 
     function doInit() {
@@ -129,7 +159,7 @@ $( document ).ready(function() {
         var browserURL =  urlParams.has('path') ? urlParams.get('path') : rootpath; // %TODO : add comment
 
         navigator.setRootpath(rootpath); // NOTE rootpath is unchanged
-        $('.root-folder .show-val').html(navigator.rootpath);
+        $('.root-path .show-val').html(navigator.rootpath);
 
         (function () {
             return $.ajax({
@@ -152,28 +182,19 @@ $( document ).ready(function() {
     }
     
     // 'context' is the associated 'li' element for the node
-    function doUpdate(context) {
-        var nodeType = context.data('nodetype');
-        var selectedNode ;
+    function doUpdate(selectedNode) {
 
-        // %TODO %CHECKME %ENCAPSULTE
-        if ( 'parent'===context.data('guid') ) {
-            selectedNode = navigator.parentNode;
-        } else {
-            selectedNode = navigator.childNodes[context.data('guid')]; 
-        }
-
-        if ( 'file' == nodeType ) {
+        if ( 'file' == selectedNode.nodeType ) {
             // navigating into file
             navigator.pushFile(selectedNode);
             $('#val-current').html( navigator.renderCurrent() );
-            $('form#form-upload_file input[name=dst]').val(navigator.currentNode);
+            $('form#form-upload_file input[name=dst]').val(navigator.currentNode.pathname );
             $('.meta').html( navigator.buildMeta() );
             $('.children').html( navigator.buildChildList() );
             $('.parent').html( navigator.buildParentList() );
 
             // %TODO; how do we know what node in the Navigator struct we clicked on from the DOM info??
-            // %TODO; shoudl be renderAsParent but pass current? how to do this?
+            // %TODO; should be renderAsParent but pass current? how to do this?
             // => actually need to call update here, w/o going to api to get the new node list
             // %TODO: make this a link (add as method argument, and combine render...() methods into one
         } else {
@@ -203,11 +224,29 @@ $( document ).ready(function() {
         }
     }
 
-
-    $(document).on('click', 'a.clickme_to_navigate', function(e) {
+    // $%FIXME
+    $(document).on('click', '.crate-parent a.clickme_to_navigate', function(e) {
         e.preventDefault();
         var context = $(this).closest('li');
-        doUpdate(context);
+        var selectedNode = navigator.parentNode;
+        doUpdate(selectedNode);
+        return false;
+    });
+
+    $(document).on('click', '.children a.clickme_to_navigate', function(e) {
+        e.preventDefault();
+        var context = $(this).closest('li');
+        //var nodeType = context.data('nodetype'); // %FIXME redundant
+        var selectedNode = navigator.childNodes[context.data('guid')]; 
+        doUpdate(selectedNode);
+        return false;
+    });
+
+    $(document).on('click', '.search-results a.clickme_to_navigate', function(e) {
+        e.preventDefault();
+        var context = $(this).closest('li');
+        var selectedNode = searchResults[context.data('guid')]; 
+        doUpdate(selectedNode);
         return false;
     });
 
@@ -232,11 +271,22 @@ $( document ).ready(function() {
             success: function (response) {
                 $('.children').html( navigator.buildChildList() );
                 //$('.parent').html( navigator.buildParentList() );
-            },
-            error: function (e) {
             }
         });
 
+    });
+
+    $(document).on('submit', 'form.form-search', function (e) {
+        e.preventDefault();
+        var thisForm = $(this);
+        var payload = {
+            q: thisForm.find('input[name="q"]').val(),
+            src: navigator.currentNode.pathname
+        };
+        $.getJSON('/api/search.php', payload, function(response) {
+            searchResults = Utils.createNodeArray(response.nodes);
+            $('.search-results').html( Utils.buildSearchList(searchResults) );
+        });
     });
 
     $(document).on('submit', 'form.form-edit_root', function (e) {
@@ -266,15 +316,11 @@ $( document ).ready(function() {
                     window.sessionStorage.setItem("rootpath", navigator.rootpath);
                     window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+navigator.rootpath ); // update browser URL %TODO: encasualte in function
                     $('#val-current').html( navigator.renderCurrent() );
-                    $('.root-folder .show-val').html(navigator.rootpath);
+                    $('.root-path .show-val').html(navigator.rootpath);
                     $('.meta').html( navigator.buildMeta() );
                     $('.children').html( navigator.buildChildList() );
                     $('.parent').html( navigator.buildParentList() );
                 });
-            },
-            error: function (e) {
-                console.log('error');
-                // %TODO: display error
             }
         });
 

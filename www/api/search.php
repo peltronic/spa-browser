@@ -7,17 +7,16 @@ $errors = [];
 
 if ( empty($attrs['src']) ) {
     $errors[] = "Missing required parameter 'src'";
-}
-$attrs['q'] = empty($attrs['q']) ? '' : trim($attrs['q']);
-
-if ( !Utils::isWhitelisted($attrs['src']) ) {
+} else if ( !Utils::isWhitelisted($attrs['src']) ) {
     throw new \Exception("Access denied");
+} else {
+    $e = Utils::checkPath($attrs['src']);
+    if ( count($e) ) {
+        $errors = array_merge($errors,$e);
+    }
 }
 
-$e = Utils::checkPath($attrs['src']);
-if ( count($e) ) {
-    $errors = array_merge($errors,$e);
-}
+$attrs['q'] = empty($attrs['q']) ? '' : trim($attrs['q']);
 
 if ( 0===count($errors) && !empty($attrs['q']) ) {
     $pattern = '/'.$attrs['q'].'/';

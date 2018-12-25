@@ -85,7 +85,7 @@ Navigator.prototype.buildParentList = function() {
     if ( this.currentNode.pathname === this.rootpath ) {
         htmlStr = parsed + ' ('+nObj.size+')';
     } else {
-        htmlStr = this.renderLink( parsed, parsed ) + ' ('+nObj.size+')';
+        htmlStr = Utils.renderLink( parsed, parsed ) + ' ('+nObj.size+')';
     }
     $('<li>').attr('data-nodetype', nObj.nodeType).html(htmlStr)
              .attr('data-guid', 'parent') // poor-man's hash to locate from associated DOM (%FIXME: explain better)
@@ -95,7 +95,6 @@ Navigator.prototype.buildParentList = function() {
 
 // Creates a <ul> list and adds nodes as <li> elements to it
 Navigator.prototype.buildChildList = function() {
-    //  ~ %NOTE: tightly coupled to api response format
     var i, nObj, htmlStr, parsed;
     var ul = $('<ul>');
 
@@ -104,7 +103,7 @@ Navigator.prototype.buildChildList = function() {
         for (i = 0; i < this.childNodes.length; i++) {
             nObj = this.childNodes[i];
             parsed = Utils.parseRelativePath(this.rootpath, nObj.pathname);
-            htmlStr = this.renderLink( parsed, parsed ) + ' ('+nObj.size+')';
+            htmlStr = Utils.renderLink( parsed, parsed ) + ' ('+nObj.size+')';
             $('<li>').attr('data-nodetype', nObj.nodeType).html(htmlStr)
                      .attr('data-guid', i) // poor-man's hash to locate from associated DOM (%FIXME: explain better)
                      .appendTo(ul);
@@ -112,6 +111,8 @@ Navigator.prototype.buildChildList = function() {
     } // otherwise, files have no children...
     return ul;
 }
+
+
 Navigator.prototype.buildMeta = function() {
     var ul = $('<ul>');
     $('<li>').html( 'File count: '+this.fileCount ).appendTo(ul);
@@ -127,13 +128,6 @@ Navigator.prototype.renderCurrent = function() {
     //var parsed = Utils.parseRelativePath(this.rootpath, this.currentNode.pathname);
     var parsed = this.currentNode.pathname;
     return parsed + ' ('+this.currentNode.size+')'; // %FIXME: DRY
-}
-
-Navigator.prototype.renderLink = function(title, subpath) {
-    // Create markup for a html <a> tag
-    // html builder (??)
-    var href = Utils.getAppURL()+'?path='+subpath;
-    return '<a href="'+href+'" class="clickme_to_navigate" data-subpath="'+subpath+'">' + title + '</a>';
 }
 
 Navigator.prototype.doReset = function() {
