@@ -97,7 +97,6 @@
                                         <span>Upload File</span>
                                         <input type="file" name="file" id="file_to_upload">
                                     </label>
-                                    <input type="hidden" name="foo" value="bar">
                                     <input type="submit" value="Upload">
                                 </form> 
                             </div>
@@ -257,7 +256,6 @@ $( document ).ready(function() {
         var thisForm = $(this);
         var formdata = new FormData(thisForm[0]);
         
-        //formdata.append("CustomField", "This is some extra data, testing"); // use this and remvoe hidden field %TODO
         formdata.append("dst", navigator.currentNode.pathname);
 
         //$("#clickme-to_submit").prop("disabled", true);
@@ -270,6 +268,7 @@ $( document ).ready(function() {
             contentType: false,
             processData: false,
             success: function (response) {
+                doUpdate(navigator.currentNode);
                 $('.children').html( navigator.buildChildList() );
                 //$('.parent').html( navigator.buildParentList() );
             }
