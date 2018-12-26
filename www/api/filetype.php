@@ -1,5 +1,6 @@
 <?php
-require_once('../../libs/Utils.php'); // %FIXME
+require_once('../../libs/Utils.php');
+
 // returns file, folder, or invalid (doesn't exist, or not writable, readable, etc)
 
 $attrs = $_POST; // query params

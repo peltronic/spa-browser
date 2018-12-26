@@ -1,0 +1,15 @@
+
+# psgc-aws
+rsync -az --force --delete --progress \
+          --chmod=g+w \
+          --rsync-path='rsync' \
+          --exclude-from=rsyncconfig/rsync_exclude--update.txt \
+          ./  \
+          psgc-aws:/jet/www/src/filebrowser
+
+rsync -az --force --delete --progress \
+          --chmod=g+w \
+          --rsync-path='rsync' \
+          --exclude-from=rsyncconfig/rsync_exclude--init.txt \
+          ./  \
+          psgc-aws:/jet/www/src/filebrowser

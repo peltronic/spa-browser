@@ -7,6 +7,7 @@ function BrowserApp() {
         searchtool: null,
         navigator: null,
 
+        // Update the node navigator based on selected Node, and if file or folder
         doUpdate: function(selectedNode) {
 
             var _this = this;
@@ -53,7 +54,7 @@ function BrowserApp() {
                 li.html(htmlStr);
             } else {
                 a = $('<a>').addClass('tag-parent').html( htmlStr ).appendTo(li);
-                li.on('click', 'a.tag-parent', cbWrapper(nObj));
+                li.on('click', 'a.tag-parent', cbWrapper(nObj)); // click handler: update nodes to navigate
             }
 
             li.appendTo(ul);
@@ -84,7 +85,7 @@ function BrowserApp() {
 
                     htmlStr = parsed + ' ('+nObj.size+')';
                     a = $('<a>').addClass('tag-child').html( htmlStr ).appendTo(li);
-                    li.on('click', 'a.tag-child', cbWrapper(nObj));
+                    li.on('click', 'a.tag-child', cbWrapper(nObj)); // click handler: update nodes to navigate
                     li.appendTo(ul);
                 }
             } // otherwise, files have no children...
@@ -114,7 +115,7 @@ function BrowserApp() {
     
                 htmlStr = parsed + ' ('+nObj.size+')';
                 a = $('<a>').addClass('tag-search').html( htmlStr ).appendTo(li);
-                li.on('click', 'a.tag-search', cbWrapper(nObj));
+                li.on('click', 'a.tag-search', cbWrapper(nObj)); // click handler: update nodes ton avigate
                 li.appendTo(ul);
             }
             return $('<div>').append('<h4>SearchResults</h4>').append(ul);
@@ -132,8 +133,8 @@ function BrowserApp() {
                 htmlStr += ' | <a class="clickme-to_download">Download</a>' ;
                 $('<li>').html( htmlStr ).appendTo(ul);
             } else {
-                $('<li>').html( 'File count: '+this.fileCount ).appendTo(ul);
-                $('<li>').html( 'Folder count: '+this.folderCount ).appendTo(ul);
+                $('<li>').html( 'File count: '+this.navigator.fileCount ).appendTo(ul);
+                $('<li>').html( 'Folder count: '+this.navigator.folderCount ).appendTo(ul);
                 htmlStr = '<a class="clickme-to_upload">Upload</a>' ;
                 $('<li>').html( htmlStr ).appendTo(ul);
             }
@@ -165,6 +166,7 @@ function BrowserApp() {
             this.uploader = Uploader();
             this.rootinit = Rootinit();
             var _this = this;
+            var htmlStr;
 
             // --- Init libs with any callbacks required ---
 
@@ -213,6 +215,8 @@ function BrowserApp() {
                     window.history.replaceState( {}, 'MapLarge App', Utils.getAppURL()+'?path='+browserURL ); // update browser URL (deep-linking)
                     _this.renderMiscUI();
                 });
+            } else {
+                $('.root-path .show-val').html( 'Please set a home path' );
             }
     
             // --- Misc. event handlers ---

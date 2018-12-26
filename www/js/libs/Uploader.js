@@ -31,10 +31,6 @@ function Uploader() {
                     success: function (response) {
                         thisForm.hide().trigger('reset');
                         renderCb();
-                        /*
-                        _this.doUpdate(_this.navigator.currentNode);
-                        $('.children').html( _this.buildChildList() );
-                        */
                     }
                 });
         

@@ -13,11 +13,8 @@ if ( empty($attrs['src']) ) {
         $errors = array_merge($errors,$e);
     }
 }
-//print_r($attrs); die;
 
 header('Content-Type: application/octet-stream');
 header('Content-Disposition: attachment; filename='.$attrs['filename']);
 readfile($attrs['src']); 
-//header('Content-Disposition: attachment; filename='.$_REQUEST['f']);
-//readfile('../some_folder/some_subfolder/'.$_REQUEST['f']); 
 exit;

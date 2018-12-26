@@ -20,6 +20,7 @@ function Searchtool() {
             var _this = this;
             _this.navigator = navigator;
 
+            // Handle search form submit
             $(document).on('submit', 'form.form-search', function (e) {
                 e.preventDefault();
                 var thisForm = $(this);
@@ -32,6 +33,7 @@ function Searchtool() {
                 });
             });
         
+            // Handle clicking link to display search form
             $(document).on('click', '.clickme-to_search', function(e) {
                 var navigationCrate = $(this).closest('.crate-navigation');
                 navigationCrate.find('.children').hide();
@@ -39,6 +41,7 @@ function Searchtool() {
                 navigationCrate.find('form.form-search').show();
             });
         
+            // Handle search form cancel
             $(document).on('click', 'form.form-search .clickme-to_cancel', function(e) {
                 var navigationCrate = $(this).closest('.crate-navigation');
                 _this.clearSearch(navigationCrate);
