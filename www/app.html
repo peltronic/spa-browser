@@ -19,18 +19,20 @@
 
                 <h1 class="title">Hello App!</h1>
 
-
-                <div class="dropdown is-active">
+                <div class="dropdown OFF-is-active">
                     <div class="dropdown-trigger">
-                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu2">
-                            <span>Content</span>
-                            <span class="icon is-small"> <i class="fas fa-angle-down" aria-hidden="true"></i> </span>
+                        <button class="clickme-to_toggle_readme button is-warning is-medium" aria-haspopup="true" aria-controls="dropdown-menu2">
+                            <span>README</span>
                         </button>
                     </div>
-                    <div class="dropdown-menu" id="dropdown-menu2" role="menu">
+                    <div id="dropdown-readme" class="dropdown-menu" id="dropdown-menu2" role="menu">
                         <div class="dropdown-content">
                             <div class="dropdown-item">
-                                <p>You can insert <strong>any type of content</strong> within the dropdown menu.</p>
+                                <p>Click 'README' to close this pop-up</p>
+                            </div>
+                            <hr class="dropdown-divider">
+                            <div class="dropdown-item demo_home_paths">
+                                <p>For demo purposes, the following four home paths can be used. Click 'edit' under Home Folder and copy/paste one of these paths...</p>
                                 <ul>
                                     <li>/home/public/folderA</li>
                                     <li>/home/public/folderB</li>
@@ -41,23 +43,19 @@
                             </div>
                             <hr class="dropdown-divider">
                             <div class="dropdown-item">
-                                <p>You simply need to use a <code>&lt;div&gt;</code> instead.</p>
+                                <p>Click on a link in navigator panel on left to go to that folder or file.</p>
+                                <br />
+                                <p>The right panel will show information about the current location, plus any relevant operations (download for file, upload for a folder, etc).</p>
                             </div>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item"> This is a link </a>
                         </div>
                     </div>
                 </div>
-        
-                <section id="widget-1" class="widget">
-                    <h2>Widget 1</h2>
-                </section>
         
                 <!-- ++++++++++++++++++++++++++++++++++++++++++++ -->
 
                 <section id="widget-2" class="widget">
 
-                    <h2 class="subtitle is-4">Widget 2</h2>
+                    <h2 class="subtitle is-4">Widget 1</h2>
 
                     <article class="columns">
 
@@ -143,12 +141,6 @@
 
                 </section>
 
-                <!-- ++++++++++++++++++++++++++++++++++++++++++++ -->
-
-                <section id="widget-3" class="widget">
-                    <h2>Widget 3</h2>
-                </section>
-        
 
             </div> <!-- #maplarge-app -->
 
@@ -175,6 +167,10 @@ $( document ).ready(function() {
 
     var app = BrowserApp();
     app.init();
+
+    $(document).on('click', '.clickme-to_toggle_readme', function(e) {
+        $('#dropdown-readme').toggle();
+    });
 
 });
 </script>

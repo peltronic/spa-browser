@@ -4,6 +4,7 @@ http://www.dev-maplarge.com/app.html
 http://www.dev-maplarge.com/api/index.php?src=/treeroot/foo
 
 %TODO:
+[ ] add docs to git, including README
 [ ] problem: links in library have handlers in 'main' (coupling)
 [ ] folder green if writable, disable upload and move if not writable (?)
 [ ] multiple browser testing

@@ -50,6 +50,9 @@ mockups (fast, agile)
 Agile:
 
 A loose form of scrum, agile-like
+rapid prototyping
+iterative development
+TDD
 
 Jira:
 
@@ -152,3 +155,10 @@ Analogy: putting together a piece of furniture from Ikea, or decorating a Christ
 %%%
 
 %%%
+
+Offline notes:
+~ for tech audience this would be more complete
+~ not sure if intention is to be a full spec or more like a presentation for overview purposes
+~ 80/20: design & build 80% of features & functionality very quickly (the known), to flush out the 20% of unknowns and corner cases sooner rather than later
+~ these slides exhibit a loose process, it’s not rigid
+
